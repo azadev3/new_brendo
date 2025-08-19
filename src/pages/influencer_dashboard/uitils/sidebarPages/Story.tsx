@@ -10,6 +10,10 @@ const Story: React.FC = () => {
     lang,
   ]);
 
+  const userStr = localStorage.getItem('user-info');
+  const parsedUser = userStr ? JSON.parse(userStr) : null;
+  const token = parsedUser?.token || '';
+
   return (
     <div className="story-wrapper">
       <TopTitle>
@@ -26,7 +30,7 @@ const Story: React.FC = () => {
           <div className="grid-items">
             <div className="item">
               <div className="image-container">
-                <img className='main-image' src="" alt="" />
+                <img className="main-image" src="" alt="" />
               </div>
               <button type="button" className="download">
                 <img src="/dddd.svg" alt="download-image" role="button" />
@@ -40,7 +44,12 @@ const Story: React.FC = () => {
             <div className="item">
               <div className="video-container">
                 <video src="" controls={false} autoPlay={false} loop={false} muted />
-                <img role='button' className='play-btn' src="/Play button.svg" alt="Play button" />
+                <img
+                  role="button"
+                  className="play-btn"
+                  src="/Play button.svg"
+                  alt="Play button"
+                />
               </div>
               <button type="button" className="download">
                 <img src="/dddd.svg" alt="download-image" role="button" />
