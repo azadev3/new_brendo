@@ -5,6 +5,7 @@ import Collections from './sidebarPages/Collections';
 import Promocodes from './sidebarPages/Promocodes';
 import Payments from './sidebarPages/Payments';
 import Settings from './sidebarPages/Settings';
+import Story from './sidebarPages/Story';
 
 const DashboardContent: React.FC = () => {
   const location = useLocation();
@@ -21,6 +22,8 @@ const DashboardContent: React.FC = () => {
       return <Payments />;
     } else if (location.pathname === `/${lang}/influencer/tenzimlemeler`) {
       return <Settings />;
+    } else if (location.pathname === `/${lang}/influencer/story`) {
+      return <Story />
     }
   };
 

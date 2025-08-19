@@ -30,12 +30,12 @@ export const useDashboard = () => {
       icon: '/FolderWithFiles.svg',
       to: 'kolleksiyalar',
     },
-    // {
-    //     id: 3,
-    //     title: "Story",
-    //     icon: "/TrafficEconomy.svg",
-    //     to: "story"
-    // },
+    {
+        id: 3,
+        title: "Story",
+        icon: "/TrafficEconomy.svg",
+        to: "story"
+    },
     {
       id: 4,
       title: translation?.inf_promokodlar ?? '',
@@ -61,8 +61,6 @@ export const useDashboard = () => {
       isLink: true,
     },
   ];
-
-  console.log(DashboardElements, 'DASHELEMENTS');
 
   return { DashboardElements };
 };
