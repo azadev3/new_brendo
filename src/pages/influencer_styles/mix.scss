@@ -1,0 +1,21 @@
+$hoverColor: #2c64b2;
+$blue: #3873c3;
+
+@mixin flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flexcol {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+@mixin click {
+  &:active {
+    transform: scale(0.97);
+  }
+}

@@ -1,0 +1,21 @@
+/* Thumbnail styles */
+.thumbs-swiper .swiper-slide {
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+    opacity: 1;
+}
+
+/* Active thumbnail indicator */
+.thumbs-swiper .swiper-slide-thumb-active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
