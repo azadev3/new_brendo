@@ -22,7 +22,6 @@
     <!-- End Google Tag Manager -->
   </head>
   <body>
-    <!-- ✅ İlk render üçün skeleton -->
     <div id="root" style="padding-top: 40px">
       <noscript>Loading...</noscript>
     </div>
@@ -32,10 +31,8 @@
       style="width: 100%; height: auto; position: absolute; z-index: 10000; top: 0"
     ></div>
 
-    <!-- ✅ Əsas React kodu defer ilə -->
     <script type="module" src="/src/main.tsx" defer></script>
 
-    <!-- ✅ LiveChat defer ilə -->
     <script defer>
       window._lc = window._lc || {};
       window.__lc.license = 19073179;
@@ -59,7 +56,8 @@
             i(['off', c.call(arguments)]);
           },
           get: function () {
-            if (!e._h) throw new Error("[LiveChatWidget] You can't use getters before load.");
+            if (!e._h)
+              throw new Error("[LiveChatWidget] You can't use getters before load.");
             return i(['get', c.call(arguments)]);
           },
           call: function () {
@@ -77,11 +75,15 @@
       })(window, document, [].slice);
     </script>
 
-    <!-- ✅ Fallback (SEO və noscript üçün) -->
     <noscript>
-      <a href="https://www.livechat.com/chat-with/19073179/" rel="nofollow"> Chat with us </a>
+      <a href="https://www.livechat.com/chat-with/19073179/" rel="nofollow">
+        Chat with us
+      </a>
       , powered by
-      <a href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank"
+      <a
+        href="https://www.livechat.com/?welcome"
+        rel="noopener nofollow"
+        target="_blank"
         >LiveChat</a
       >
       <iframe
