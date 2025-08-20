@@ -14,9 +14,11 @@ interface Props {
 
 const AddProductCollection: React.FC<Props> = ({ opener, onClose }) => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   const { productId } = useCollectionModal();
   const { collections } = useCollections();
@@ -72,10 +74,13 @@ const AddProductCollection: React.FC<Props> = ({ opener, onClose }) => {
           <form
             onSubmit={(e: React.FormEvent) => {
               e.preventDefault();
-              addProductInCollection({
-                collection_id: selectedIds,
-                product_id: productId || 0,
-              });
+              addProductInCollection(
+                {
+                  collection_id: selectedIds,
+                  product_id: productId || 0,
+                },
+                translation?.mehsul_is_added ?? '',
+              );
             }}
             acceptCharset="UTF-8"
             className="form-for-bottom"
@@ -101,10 +106,22 @@ const AddProductCollection: React.FC<Props> = ({ opener, onClose }) => {
                     >
                       <div className="left-area">
                         <div className="image">
-                          <img src="/4666a9244ae471c19531d95245425c8b47835f20.png" alt="" />
-                          <img src="/4666a9244ae471c19531d95245425c8b47835f20.png" alt="" />
-                          <img src="/4666a9244ae471c19531d95245425c8b47835f20.png" alt="" />
-                          <img src="/4666a9244ae471c19531d95245425c8b47835f20.png" alt="" />
+                          <img
+                            src="/4666a9244ae471c19531d95245425c8b47835f20.png"
+                            alt=""
+                          />
+                          <img
+                            src="/4666a9244ae471c19531d95245425c8b47835f20.png"
+                            alt=""
+                          />
+                          <img
+                            src="/4666a9244ae471c19531d95245425c8b47835f20.png"
+                            alt=""
+                          />
+                          <img
+                            src="/4666a9244ae471c19531d95245425c8b47835f20.png"
+                            alt=""
+                          />
                         </div>
                         <div className="text">
                           <h2>{data.title}</h2>

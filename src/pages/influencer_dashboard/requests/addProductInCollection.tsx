@@ -7,7 +7,7 @@ export interface AddProductPayloadType {
     product_id: number;
 }
 
-export const addProductInCollection = async (payload: AddProductPayloadType) => {
+export const addProductInCollection = async (payload: AddProductPayloadType, msg: any) => {
     const userStr = localStorage.getItem('user-info');
     const user = userStr ? JSON.parse(userStr) : "";
     const token = user?.token;
@@ -20,7 +20,7 @@ export const addProductInCollection = async (payload: AddProductPayloadType) => 
         });
 
         if (res.data) {
-            toast.success("Mehsul kolleksiyaya uğurla əlavə edildi!");
+            toast.success(msg);
             payload.collection_id = [];
             payload.product_id = 0;
         }

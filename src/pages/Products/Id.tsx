@@ -91,17 +91,11 @@ export default function ProductId() {
   const parse = userStr ? JSON.parse(userStr) : null;
   const token = parse?.token;
 
-  const { data: Productslingle, isLoading: ProductslingleLoading } = GETRequest<ProductDetail>(
-    `/productSingle/${slug}`,
-    'productSingle',
-    [lang, slug],
-  );
+  const { data: Productslingle, isLoading: ProductslingleLoading } =
+    GETRequest<ProductDetail>(`/productSingle/${slug}`, 'productSingle', [lang, slug]);
 
-  const { data: tarnslation, isLoading: tarnslationLoading } = GETRequest<TranslationsKeys>(
-    `/translates`,
-    'translates',
-    [lang],
-  );
+  const { data: tarnslation, isLoading: tarnslationLoading } =
+    GETRequest<TranslationsKeys>(`/translates`, 'translates', [lang]);
 
   // oxşar məhsullar
   const [similarProducts, setSimilarProducts] = React.useState<Product[]>([]);
@@ -159,7 +153,9 @@ export default function ProductId() {
       for (const item of basked.basket_items) {
         if (
           item.product?.id === Productslingle.id &&
-          item.options?.some((opt: any) => opt.option?.option_id === selectedSize?.optionId)
+          item.options?.some(
+            (opt: any) => opt.option?.option_id === selectedSize?.optionId,
+          )
         ) {
           includes = true;
           break;
@@ -183,7 +179,9 @@ export default function ProductId() {
           ci =>
             ci.product.id === Productslingle.id &&
             ci.options?.some(
-              o => o.filter === sizeFilter.filter_name && o.option === selectedSize.optionName,
+              o =>
+                o.filter === sizeFilter.filter_name &&
+                o.option === selectedSize.optionName,
             ),
         );
 
@@ -219,7 +217,8 @@ export default function ProductId() {
       item => item.filter_name !== 'Color' && item.filter_name !== 'Цвет',
     );
 
-    const defaults: { filter_name: string; optionName: string; optionId: number }[] = [];
+    const defaults: { filter_name: string; optionName: string; optionId: number }[] =
+      [];
     otherFilters.forEach(filter => {
       const def = filter.options.find(item => item.is_default);
       if (def) {
@@ -233,7 +232,11 @@ export default function ProductId() {
     if (defaults.length > 0) setCurrentOption(defaults);
   }, [Productslingle]);
 
-  const handleOptionSelect = (filterName: string, optionName: string, optionId: number) => {
+  const handleOptionSelect = (
+    filterName: string,
+    optionName: string,
+    optionId: number,
+  ) => {
     const updated = currentOption.filter(option => option.filter_name !== filterName);
     updated.push({ filter_name: filterName, optionName, optionId });
     setCurrentOption(updated);
@@ -244,7 +247,9 @@ export default function ProductId() {
   };
 
   const isOptionSelected = (filterName: string, optionName: string): boolean =>
-    currentOption.some(o => o.filter_name === filterName && o.optionName === optionName);
+    currentOption.some(
+      o => o.filter_name === filterName && o.optionName === optionName,
+    );
 
   // SERVERƏ SƏBƏTƏ ƏLAVƏ ET (loginli üçün)
   const addToBasket = async (data: {
@@ -279,7 +284,8 @@ export default function ProductId() {
         },
       },
     );
-    if (collectionId && collectionId?.length > 0) localStorage.removeItem('collection_id');
+    if (collectionId && collectionId?.length > 0)
+      localStorage.removeItem('collection_id');
     return response.data;
   };
 
@@ -433,7 +439,9 @@ export default function ProductId() {
   const navigate = useNavigate();
 
   // disable şərtini ölçünün faktiki seçiminə bağlayaq
-  const hasSize = currentOption.some(o => ['Size', 'Ölçü', 'Размер'].includes(o.filter_name));
+  const hasSize = currentOption.some(o =>
+    ['Size', 'Ölçü', 'Размер'].includes(o.filter_name),
+  );
   const isAddToBasketDisabled = !isInStock || !hasSize;
 
   const [favicon, setFavicon] = React.useState<{ image: string }>({ image: '' });
@@ -494,7 +502,10 @@ export default function ProductId() {
       <main className=" lg:mt-[54px] mt-0 max-sm:mt-3">
         <div className="px-[40px] max-sm:px-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <Link reloadDocument to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}>
+            <Link
+              reloadDocument
+              to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}
+            >
               <h6 className="text-nowrap self-stretch max-sm:text-[12px] my-auto text-black hover:text-blue-600">
                 {tarnslation?.home}
               </h6>
@@ -505,7 +516,10 @@ export default function ProductId() {
               className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
             />
 
-            <Link reloadDocument to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}>
+            <Link
+              reloadDocument
+              to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}
+            >
               <h6 className="self-stretch  max-sm:text-[12px] my-auto hover:text-blue-600">
                 {tarnslation?.Məhsullar}
               </h6>
@@ -523,7 +537,9 @@ export default function ProductId() {
         <section className="flex lg:flex-row flex-col gap-10 mx-[40px]  max-sm:mx-4 relative">
           <div className=" lg:w-[40%] w-full ">
             <div className=" sticky top-[10px]">
-              <ProductGallery images={Productslingle?.sliders.map(item => item.image) || []} />
+              <ProductGallery
+                images={Productslingle?.sliders.map(item => item.image) || []}
+              />
             </div>
           </div>
           <section className="flex flex-col max-w-[650px] mt-[24px]">
@@ -631,7 +647,9 @@ export default function ProductId() {
                       src="https://cdn.builder.io/api/v1/image/assets/TEMP/3b62d68e0d6115b8dd376935f9a020305d201f125a5ae0023584b7f5eddf7971?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
                       className="object-contain shrink-0 self-stretch my-auto w-5 aspect-square"
                     />
-                    <div className="self-stretch my-auto">{tarnslation?.Stokda_var}</div>
+                    <div className="self-stretch my-auto">
+                      {tarnslation?.Stokda_var}
+                    </div>
                   </>
                 ) : (
                   <>
@@ -661,18 +679,20 @@ export default function ProductId() {
               <div className="flex gap-4 items-center self-stretch my-auto text-base font-semibold min-w-[240px] text-slate-800 w-[276px]">
                 <div className="flex gap-2 items-center self-stretch my-auto">
                   <div className="flex flex-row gap-1">
-                    {Array.from({ length: Productslingle?.avg_star || 0 }).map((_, i) => (
-                      <svg
-                        key={i}
-                        width="20"
-                        height="19"
-                        viewBox="0 0 20 19"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="..." fill="#FABD21" />
-                      </svg>
-                    ))}
+                    {Array.from({ length: Productslingle?.avg_star || 0 }).map(
+                      (_, i) => (
+                        <svg
+                          key={i}
+                          width="20"
+                          height="19"
+                          viewBox="0 0 20 19"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="..." fill="#FABD21" />
+                        </svg>
+                      ),
+                    )}
                   </div>
                   {/* <div className="self-stretch my-auto">
                     {Productslingle?.avg_star}{' '}
@@ -729,7 +749,9 @@ export default function ProductId() {
                         className="self-stretch my-auto text-nowrap"
                         style={isinbusked ? { color: 'black' } : { color: 'white' }}
                       >
-                        {!isinbusked ? tarnslation?.add_to_cart : tarnslation?.added_to_cart}
+                        {!isinbusked
+                          ? tarnslation?.add_to_cart
+                          : tarnslation?.added_to_cart}
                       </div>
                     </div>
                   </button>
@@ -761,11 +783,16 @@ export default function ProductId() {
                         .catch(error => console.log(error));
                     }
                   } else {
-                    navigate(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
+                    navigate(
+                      `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
+                    );
                   }
                 }}
               >
-                <img src={!isliked ? '/svg/hartBlack.svg' : '/svg/hartRed.svg'} alt="" />
+                <img
+                  src={!isliked ? '/svg/hartBlack.svg' : '/svg/hartRed.svg'}
+                  alt=""
+                />
               </div>
 
               <div
@@ -775,7 +802,9 @@ export default function ProductId() {
                 <span className="text-[#3873C3]">
                   <GiHanger size={24} />
                 </span>
-                <span className="text-[#3873C3] text-[14px]">Испытайте продукт на себя</span>
+                <span className="text-[#3873C3] text-[14px]">
+                  Испытайте продукт на себя
+                </span>
               </div>
             </div>
 
@@ -919,7 +948,10 @@ export default function ProductId() {
         )}
       </main>
 
-      <SelectSizeSidebar onClose={() => setOpenSideBar(false)} openSidebar={openSideBar} />
+      <SelectSizeSidebar
+        onClose={() => setOpenSideBar(false)}
+        openSidebar={openSideBar}
+      />
       <Footer />
     </div>
   );

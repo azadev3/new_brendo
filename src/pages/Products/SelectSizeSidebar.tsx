@@ -25,9 +25,11 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
   const clothInputRef = useRef<HTMLInputElement>(null);
   const humanInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: tarnslation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: tarnslation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   useEffect(() => {
     document.body.style.overflow = openSidebar ? 'hidden' : '';
@@ -107,12 +109,16 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
       formData.append('clothing_image', humanImage, humanImage.name);
       formData.append('user_image', clothImage, clothImage.name);
 
-      const res = await axios.post('https://admin.brendoo.com/api/swap-clothing', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Accept-Language': lang,
+      const res = await axios.post(
+        'https://admin.brendoo.com/api/swap-clothing',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Accept-Language': lang,
+          },
         },
-      });
+      );
 
       const imageUrl = res.data?.result_image_url;
       if (imageUrl) {
@@ -251,19 +257,20 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
               <div className="mb-[40px]">
                 <h4 className="font-[500] text-[28px]">Примерьте одежду!</h4>
                 <p className="text-[15px]">
-                  Загрузите изображение одежды и своё фото, чтобы примерить одежду виртуально.
+                  Загрузите изображение одежды и своё фото, чтобы примерить одежду
+                  виртуально.
                 </p>
               </div>
 
               <UploadBox
-                label="Загрузите изображение одежды"
+                label={tarnslation?.cloth_img_label ?? ''}
                 image={clothImage}
                 onSelect={() => handleSelectFile('cloth')}
                 onRemove={() => removeFile('cloth')}
               />
 
               <UploadBox
-                label="Загрузите своё изображение"
+                label={tarnslation?.human_image_text ?? ''}
                 image={humanImage}
                 onSelect={() => handleSelectFile('human')}
                 onRemove={() => removeFile('human')}
@@ -296,7 +303,7 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
 
           <div className="flex w-full gap-4 mt-8 justify-start">
             <Link
-            reloadDocument
+              reloadDocument
               className="font-[400] text-[14px] text-[#3873C3] hover:text-[blue] transition-[300ms]"
               to={`/условия-и-положения/${lang}/${
                 dataRulesPage

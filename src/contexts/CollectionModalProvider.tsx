@@ -23,6 +23,8 @@ export const CollectionModalProvider: React.FC<{ children: React.ReactNode }> = 
     );
 };
 
+
+
 export const useCollectionModal = () => {
     const context = useContext(CollectionModalContext);
     if (!context) {

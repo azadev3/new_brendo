@@ -44,14 +44,16 @@ export interface CollectionsInterfaceApi {
 
 const Collections: React.FC = () => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   const { defaultMoreActions } = useActions();
 
   const [search, setSearch] = React.useState<string>('');
-  const { collections, setCollectionsData } = useCollections();
+  const { collections, setCollections } = useCollections();
 
   // open more actions
   const [actions, setActions] = React.useState<number | null>(null);
@@ -66,7 +68,9 @@ const Collections: React.FC = () => {
   };
 
   // handle edit collection
-  const [editCollectionModal, setEditCollectionModal] = React.useState<number | null>(null);
+  const [editCollectionModal, setEditCollectionModal] = React.useState<number | null>(
+    null,
+  );
   const handleEditCollectionModal = (id: number | null) => {
     setEditCollectionModal(id);
   };
@@ -89,11 +93,14 @@ const Collections: React.FC = () => {
       const fetchData = async () => {
         try {
           const result = await getCollectionListWithSearch(search);
-          const withMoreActions = result?.data?.map((data: CollectionsInterfaceApi) => ({
-            ...data,
-            moreActions: defaultMoreActions,
-          }));
-          setCollectionsData(withMoreActions);
+          console.log(result, 'RESSULT');
+          const withMoreActions = result?.data?.map(
+            (data: CollectionsInterfaceApi) => ({
+              ...data,
+              moreActions: defaultMoreActions,
+            }),
+          );
+          setCollections(withMoreActions);
         } catch (err) {
           console.error('no result', err);
         }
@@ -191,7 +198,11 @@ const Collections: React.FC = () => {
                     stroke="green"
                     className="w-5 h-5"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   <p className="text-green-600 font-medium">Скопировано!</p>
                 </div>
@@ -209,7 +220,7 @@ const Collections: React.FC = () => {
           <div className="grid-items">
             {dataInner?.products && dataInner?.products?.length > 0
               ? dataInner?.products?.map((p: Product) => (
-                  <div className="item-col">
+                  <div key={p?.id} className="item-col">
                     <div className="left">
                       <img src={p?.image ?? ''} />
                       <div className="right-text-content">
@@ -227,6 +238,7 @@ const Collections: React.FC = () => {
                             product_id: p?.id,
                           },
                           getInnerCollection,
+                          translation?.mehsul_kolleksiyadan_silindi_t ?? ''
                         )
                       }
                     >
@@ -335,27 +347,27 @@ const Collections: React.FC = () => {
                             </div>
                             {actions === data?.id && (
                               <div className="more-actions-mini-modal">
-                                {data?.moreActions?.map((item: MoreActionsInterface) => (
-                                  <div
-                                    key={item?.id}
-                                    className="action-item"
-                                    onClick={() => {
-                                      setActions(null);
-                                      if (item.title === translation?.redakte_et_key) {
-                                        handleEditCollectionModal(data?.id);
-                                      } else if (
-                                        item.title === translation?.kolleksiyaya_bax_key
-                                      ) {
-                                        getInnerCollection(data?.id);
-                                      } else if (item.title === translation?.sill_key) {
-                                        removeCollection(data?.id);
-                                      }
-                                    }}
-                                  >
-                                    <img src={item?.icon} alt={item?.icon} />
-                                    <p>{item?.title}</p>
-                                  </div>
-                                ))}
+                                {data?.moreActions?.map(
+                                  (item: MoreActionsInterface) => (
+                                    <div
+                                      key={item?.id}
+                                      className="action-item"
+                                      onClick={() => {
+                                        setActions(null);
+                                        if (item.id === 99991) {
+                                          getInnerCollection(data?.id); // Посмотреть коллекцию
+                                        } else if (item.id === 229379278278) {
+                                          handleEditCollectionModal(data?.id); // Редактировать
+                                        } else if (item.id === 39292928328928) {
+                                          removeCollection(data?.id); // Удалить
+                                        }
+                                      }}
+                                    >
+                                      <img src={item?.icon} alt={item?.icon} />
+                                      <p>{item?.title}</p>
+                                    </div>
+                                  ),
+                                )}
                               </div>
                             )}
                           </td>
