@@ -59,6 +59,7 @@ const StoryPage: React.FC = () => {
 
 const goDetail = (s: StoryItem) => {
   navigate(`/${lang}/influencer/story/${s.id}`, { state: { story: s } });
+  window.location.reload();
 };
 
 

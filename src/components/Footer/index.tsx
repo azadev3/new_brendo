@@ -28,7 +28,8 @@ const useFooterData = (lang: string) => {
   useEffect(() => {
     // Check cache validity
     const now = Date.now();
-    const isValid = footerCache.timestamp && now - footerCache.timestamp < CACHE_DURATION;
+    const isValid =
+      footerCache.timestamp && now - footerCache.timestamp < CACHE_DURATION;
 
     if (isValid && footerCache.categories?.length) {
       setData(footerCache);
@@ -55,10 +56,13 @@ const useFooterData = (lang: string) => {
         ]);
 
         const newData = {
-          categories: categoriesRes.status === 'fulfilled' ? categoriesRes.value.data : [],
+          categories:
+            categoriesRes.status === 'fulfilled' ? categoriesRes.value.data : [],
           socials: socialsRes.status === 'fulfilled' ? socialsRes.value.data : [],
           pages:
-            pagesRes.status === 'fulfilled' ? Object.values(pagesRes.value.data || {}) : [],
+            pagesRes.status === 'fulfilled'
+              ? Object.values(pagesRes.value.data || {})
+              : [],
           timestamp: Date.now(),
         };
 
@@ -120,7 +124,9 @@ const useContactForm = (translations: Record<string, string>) => {
       const token = userStr ? JSON.parse(userStr).token : null;
 
       if (!token) {
-        toast.error(translations?.login_required || 'Пожалуйста, зайдите в свой аккаунт');
+        toast.error(
+          translations?.login_required || 'Пожалуйста, зайдите в свой аккаунт',
+        );
         setIsSubmitting(false);
         return;
       }
@@ -220,7 +226,6 @@ const CategoryList = React.memo(
   ({
     categories,
     lang,
-    navigate,
     translations,
   }: {
     categories: Category[];
@@ -238,11 +243,9 @@ const CategoryList = React.memo(
             key={item.id}
             className="cursor-pointer hover:text-white transition-colors"
             onClick={() =>
-              navigate(
-                `/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}?category=${
-                  item.id
-                }`,
-              )
+              (window.location.href = `/${lang}/${
+                ROUTES.product[lang as keyof typeof ROUTES.product]
+              }?category=${item.id}`)
             }
           >
             {item.title}
@@ -257,7 +260,6 @@ const CategoryList = React.memo(
 const CompanyLinks = React.memo(
   ({
     lang,
-    navigate,
     translations,
   }: {
     lang: string;
@@ -272,7 +274,9 @@ const CompanyLinks = React.memo(
         <div
           className="cursor-pointer hover:text-white transition-colors"
           onClick={() =>
-            navigate(`/${lang}/${ROUTES.about[lang as keyof typeof ROUTES.about]}`)
+            (window.location.href = `/${lang}/${
+              ROUTES.about[lang as keyof typeof ROUTES.about]
+            }`)
           }
         >
           {translations?.Şirkət_haqqında || 'О компании'}
@@ -293,7 +297,6 @@ const CompanyLinks = React.memo(
 const OtherLinks = React.memo(
   ({
     lang,
-    navigate,
     translations,
     pages,
   }: {
@@ -310,7 +313,9 @@ const OtherLinks = React.memo(
         <div
           className="cursor-pointer hover:text-white transition-colors"
           onClick={() =>
-            navigate(`/${lang}/${ROUTES.contact[lang as keyof typeof ROUTES.contact]}`)
+            (window.location.href = `/${lang}/${
+              ROUTES.contact[lang as keyof typeof ROUTES.contact]
+            }`)
           }
         >
           {translations?.Əlaqə || 'Контакты'}
@@ -318,7 +323,9 @@ const OtherLinks = React.memo(
         <div
           className="cursor-pointer hover:text-white transition-colors"
           onClick={() =>
-            navigate(`/${lang}/${ROUTES.brends[lang as keyof typeof ROUTES.brends]}`)
+            (window.location.href = `/${lang}/${
+              ROUTES.brends[lang as keyof typeof ROUTES.brends]
+            }`)
           }
         >
           {translations?.Brendlər || 'Бренды'}
@@ -329,7 +336,7 @@ const OtherLinks = React.memo(
             <div
               key={item?.id}
               className="cursor-pointer hover:text-white transition-colors"
-              onClick={() => navigate(`/i/${lang}/${slug}`)}
+              onClick={() => (window.location.href = `/i/${lang}/${slug}`)}
             >
               {item?.title || 'Untitled'}
             </div>
@@ -345,7 +352,7 @@ const SocialLinks = React.memo(({ socials }: { socials: SocialMediaLink[] }) => 
   <div className="flex gap-2 items-center self-end h-[40px] w-full max-md:mt-10">
     {socials?.slice(0, 5).map((item: SocialMediaLink) => (
       <Link
-      reloadDocument
+        reloadDocument
         key={item.id}
         to={item.url}
         target="_blank"
@@ -388,7 +395,7 @@ export function Footer() {
   // Memoized navigation handler
   const handleNavigation = useCallback(
     (path: string) => {
-      navigate(path);
+      window.location.href = path;
     },
     [navigate],
   );
@@ -493,10 +500,14 @@ export function Footer() {
                         disabled={isSubscribing || !email}
                         className="px-6 py-3.5 font-medium text-white bg-blue-600 rounded-[100px] max-md:px-5 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
-                        {isSubscribing ? '...' : translations?.Abunə_ol || 'Подписаться'}
+                        {isSubscribing
+                          ? '...'
+                          : translations?.Abunə_ol || 'Подписаться'}
                       </button>
                     </div>
-                    {emailError && <p className="text-red-400 text-sm mt-1">{emailError}</p>}
+                    {emailError && (
+                      <p className="text-red-400 text-sm mt-1">{emailError}</p>
+                    )}
                   </div>
                 </div>
 
@@ -563,7 +574,9 @@ export function Footer() {
                   disabled={isSubmitting}
                   className="w-full px-4 py-2 bg-white bg-opacity-10 text-white rounded-[20px] focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 resize-none transition-all"
                 />
-                {errors.message && <p className="text-red-400 text-sm">{errors.message}</p>}
+                {errors.message && (
+                  <p className="text-red-400 text-sm">{errors.message}</p>
+                )}
 
                 <button
                   type="submit"

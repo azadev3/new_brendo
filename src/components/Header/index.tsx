@@ -144,6 +144,7 @@ export default function Header() {
       const newPath = parts.join('/');
 
       Navigae(newPath);
+      window.location.href = newPath;
       return;
     }
 
@@ -162,14 +163,23 @@ export default function Header() {
                 }/${NewSlug}`
               : '/',
           );
+          window.location.href = newPage
+            ? `/${Lang}/${ROUTES[newPage][Lang as keyof typeof ROUTES.home]}/${NewSlug}`
+            : '/';
           return;
         }
       }
       Navigae(
         newPage ? `/${Lang}/${ROUTES[newPage][Lang as keyof typeof ROUTES.home]}` : '/',
       );
+      window.location.href = newPage
+        ? `/${Lang}/${ROUTES[newPage][Lang as keyof typeof ROUTES.home]}`
+        : '/';
     } else {
       Navigae(`/${Lang}/${ROUTES.home[Lang as keyof typeof ROUTES.home]}`);
+      window.location.href = `/${Lang}/${
+        ROUTES.home[Lang as keyof typeof ROUTES.home]
+      }`;
     }
   };
 
@@ -560,6 +570,11 @@ export default function Header() {
                               ]
                             }`,
                           );
+                          window.location.href = `/${lang}/${
+                            ROUTES.userSettings[
+                              lang as keyof typeof ROUTES.userSettings
+                            ]
+                          }`;
                         } else if (hasUserType === 'influencer') {
                           window.location.href = `/${lang}/influencer/kolleksiyalar`;
                         } else {
@@ -568,14 +583,12 @@ export default function Header() {
                               ROUTES.login[lang as keyof typeof ROUTES.login]
                             }`,
                           );
+                          window.location.href = `/${lang}/${
+                            ROUTES.login[lang as keyof typeof ROUTES.login]
+                          }`;
                         }
                       }}
                     >
-                      {/* <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/f2c5ef44547ee29c9aeeedd574f237ce849c00eefa59f62c0355b167c347f116?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
-                    className="object-contain cursor-pointer shrink-0 w-10 sm:w-12 aspect-square rounded-full"
-                  /> */}
                       <UserIcon className="object-contain cursor-pointer shrink-0 w-10 sm:w-12 aspect-square rounded-full" />
                     </div>
                     <img
@@ -596,6 +609,9 @@ export default function Header() {
                               ROUTES.login[lang as keyof typeof ROUTES.login]
                             }`,
                           );
+                          window.location.href = `/${lang}/${
+                            ROUTES.login[lang as keyof typeof ROUTES.login]
+                          }`;
                         }
                       }}
                       loading="lazy"
@@ -1275,10 +1291,16 @@ export default function Header() {
                         ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]
                       }`,
                     );
+                    window.location.href = `/${lang}/${
+                      ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]
+                    }`;
                   } else {
                     Navigae(
                       `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
                     );
+                    window.location.href = `/${lang}/${
+                      ROUTES.login[lang as keyof typeof ROUTES.login]
+                    }`;
                   }
                 }}
                 className={`w-[40px] h-[40px] aspect-square rounded-full duration-300  bg-opacity-40 bg-blur-[4px] flex justify-center items-center  `}
@@ -1329,11 +1351,15 @@ export default function Header() {
 
                     // if (User) {
                     // }
-                    Navigae(`/basked/sifarislerim`);
+                    Navigae('/basked/sifarislerim');
+                    window.location.href = '/basked/sifarislerim';
                   } else {
                     Navigae(
                       `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
                     );
+                    window.location.href = `/${lang}/${
+                      ROUTES.login[lang as keyof typeof ROUTES.login]
+                    }`;
                   }
                 }}
                 className="w-[40px] h-[40px] aspect-square rounded-full duration-300 bg-blur-[4px] bg-[#F5F5F5] flex justify-center items-center relative"

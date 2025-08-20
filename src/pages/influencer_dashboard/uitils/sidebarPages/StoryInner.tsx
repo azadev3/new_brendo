@@ -1,6 +1,6 @@
 import React from 'react';
 import TopTitle from './TopTitle';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import GETRequest from '../../../../setting/Request';
 import { TranslationsKeys } from '../../../../setting/Types';
 import axios from 'axios';
@@ -25,7 +25,6 @@ interface Props {
 }
 
 const StoryInner: React.FC<Props> = ({ storyId }) => {
-  const navigate = useNavigate();
   const location = useLocation() as any;
 
   const { data: translation } = GETRequest<TranslationsKeys>(
@@ -181,7 +180,13 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
       <div className="story-wrapper">
         <TopTitle>
           <div className="left">
-            <button type="button" className="get-back" onClick={() => navigate(-1)}>
+            <button
+              type="button"
+              className="get-back"
+              onClick={() => {
+                window.location.pathname = `/${lang}/influencer/story`;
+              }}
+            >
               <img src="/Frame.svg" alt="Frame" />
               <p>{translation?.geri_key ?? 'Geri'}</p>
             </button>
@@ -198,7 +203,13 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
       <div className="story-wrapper">
         <TopTitle>
           <div className="left">
-            <button type="button" className="get-back" onClick={() => navigate(-1)}>
+            <button
+              type="button"
+              className="get-back"
+              onClick={() => {
+                window.location.pathname = `/${lang}/influencer/story`;
+              }}
+            >
               <img src="/Frame.svg" alt="Frame" />
               <p>{translation?.geri_key ?? 'Geri'}</p>
             </button>
@@ -213,7 +224,13 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
     <div className="story-wrapper">
       <TopTitle>
         <div className="left">
-          <button type="button" className="get-back" onClick={() => navigate(-1)}>
+          <button
+            type="button"
+            className="get-back"
+            onClick={() => {
+              window.location.pathname = `/${lang}/influencer/story`;
+            }}
+          >
             <img src="/Frame.svg" alt="Frame" />
             <p>{translation?.geri_key ?? 'Geri'}</p>
           </button>

@@ -213,7 +213,10 @@ const Payments: React.FC = () => {
               <button
                 type="button"
                 className="get-back"
-                onClick={() => setShowDetail(false)}
+                onClick={() => {
+                  setShowDetail(false);
+                  window.location.reload();
+                }}
               >
                 <img src={getback} alt="get back" />
                 <p>Возвращаться</p>
