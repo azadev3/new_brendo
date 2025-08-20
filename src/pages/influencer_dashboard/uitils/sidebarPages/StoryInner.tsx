@@ -41,7 +41,7 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
 
   const [story, setStory] = React.useState<StoryItem | null>(preloaded ?? null);
   const [loading, setLoading] = React.useState<boolean>(true);
-  const [zipping, setZipping] = React.useState(false);
+  // const [zipping, setZipping] = React.useState(false);
   const lang = React.useMemo(
     () => location.pathname.split('/')[1] || 'ru',
     [location.pathname],
@@ -111,69 +111,69 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
     a.remove();
   };
 
-  const getBlob = async (url: string): Promise<Blob> => {
-    try {
-      const r = await fetch(url, { credentials: 'include' });
-      if (!r.ok) throw new Error(`fetch failed ${r.status}`);
-      return await r.blob();
-    } catch {
-      const r2 = await axios.get(url, {
-        responseType: 'blob',
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      return r2.data as Blob;
-    }
-  };
+  // const getBlob = async (url: string): Promise<Blob> => {
+  //   try {
+  //     const r = await fetch(url, { credentials: 'include' });
+  //     if (!r.ok) throw new Error(`fetch failed ${r.status}`);
+  //     return await r.blob();
+  //   } catch {
+  //     const r2 = await axios.get(url, {
+  //       responseType: 'blob',
+  //       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  //     });
+  //     return r2.data as Blob;
+  //   }
+  // };
 
-  const downloadAll = async () => {
-    if (!story) return;
-    const all = story.media ?? [];
-    if (all.length === 0) return;
+  // const downloadAll = async () => {
+  //   if (!story) return;
+  //   const all = story.media ?? [];
+  //   if (all.length === 0) return;
 
-    setZipping(true);
-    try {
-      const { default: JSZip } = await import('jszip');
-      const zip = new JSZip();
-      const folder = zip.folder(`story-${story.id}`)!;
+  //   setZipping(true);
+  //   try {
+  //     const { default: JSZip } = await import('jszip');
+  //     const zip = new JSZip();
+  //     const folder = zip.folder(`story-${story.id}`)!;
 
-      for (let idx = 0; idx < all.length; idx++) {
-        const m = all[idx];
-        const ext = extFromMime(m.mime_type, m.type === 'image' ? 'jpg' : 'mp4');
-        const filename = `story-${story.id}-${m.type}-${idx + 1}.${ext}`;
+  //     for (let idx = 0; idx < all.length; idx++) {
+  //       const m = all[idx];
+  //       const ext = extFromMime(m.mime_type, m.type === 'image' ? 'jpg' : 'mp4');
+  //       const filename = `story-${story.id}-${m.type}-${idx + 1}.${ext}`;
 
-        try {
-          const blob = await getBlob(m.file_url);
-          folder.file(filename, blob);
-        } catch (e) {
-          console.warn(
-            'blob fetch fail, skipping in zip, fallback single:',
-            m.file_url,
-            e,
-          );
-          download(m.file_url, filename);
-        }
-      }
+  //       try {
+  //         const blob = await getBlob(m.file_url);
+  //         folder.file(filename, blob);
+  //       } catch (e) {
+  //         console.warn(
+  //           'blob fetch fail, skipping in zip, fallback single:',
+  //           m.file_url,
+  //           e,
+  //         );
+  //         download(m.file_url, filename);
+  //       }
+  //     }
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const a = document.createElement('a');
-      const url = URL.createObjectURL(zipBlob);
-      a.href = url;
-      a.download = `story-${story.id}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (zipErr) {
-      console.error('zip error, fallback to sequential downloads:', zipErr);
-      all.forEach((m, idx) => {
-        const ext = extFromMime(m.mime_type, m.type === 'image' ? 'jpg' : 'mp4');
-        const filename = `story-${story.id}-${m.type}-${idx + 1}.${ext}`;
-        setTimeout(() => download(m.file_url, filename), idx * 400);
-      });
-    } finally {
-      setZipping(false);
-    }
-  };
+  //     const zipBlob = await zip.generateAsync({ type: 'blob' });
+  //     const a = document.createElement('a');
+  //     const url = URL.createObjectURL(zipBlob);
+  //     a.href = url;
+  //     a.download = `story-${story.id}.zip`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     a.remove();
+  //     URL.revokeObjectURL(url);
+  //   } catch (zipErr) {
+  //     console.error('zip error, fallback to sequential downloads:', zipErr);
+  //     all.forEach((m, idx) => {
+  //       const ext = extFromMime(m.mime_type, m.type === 'image' ? 'jpg' : 'mp4');
+  //       const filename = `story-${story.id}-${m.type}-${idx + 1}.${ext}`;
+  //       setTimeout(() => download(m.file_url, filename), idx * 400);
+  //     });
+  //   } finally {
+  //     setZipping(false);
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -188,7 +188,7 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
               }}
             >
               <img src="/Frame.svg" alt="Frame" />
-              <p>{translation?.geri_key ?? 'Geri'}</p>
+              <p>{translation?.geri_key ?? ''}</p>
             </button>
             <h3>{translation?.story_keys_keys ?? ''}</h3>
           </div>
@@ -211,7 +211,7 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
               }}
             >
               <img src="/Frame.svg" alt="Frame" />
-              <p>{translation?.geri_key ?? 'Geri'}</p>
+              <p>{translation?.geri_key ?? ''}</p>
             </button>
             <h3>{translation?.story_keys_keys ?? ''}</h3>
           </div>
@@ -232,7 +232,7 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
             }}
           >
             <img src="/Frame.svg" alt="Frame" />
-            <p>{translation?.geri_key ?? 'Geri'}</p>
+            <p>{translation?.geri_key ?? ''}</p>
           </button>
           <div>
             <h3>{story.title}</h3>
@@ -240,7 +240,7 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
           </div>
         </div>
 
-        <button
+        {/* <button
           type="button"
           className="download-all-button"
           onClick={downloadAll}
@@ -258,7 +258,7 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
               ? translation?.hazirlanir
               : translation?.hamisini_yukle_key ?? 'Hamısını yüklə'}
           </span>
-        </button>
+        </button> */}
       </TopTitle>
 
       <div className="container-stories">
@@ -289,7 +289,12 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
                       );
                     }}
                   >
-                    <img src="/dddd.svg" alt="download-image" role="button" />
+                    <img
+                      src="/Download Minimalistic.svg"
+                      alt="download-video"
+                      role="button"
+                    />
+                    <span>Yüklə</span>
                   </button>
                 </div>
               ))
@@ -328,7 +333,12 @@ const StoryInner: React.FC<Props> = ({ storyId }) => {
                       );
                     }}
                   >
-                    <img src="/dddd.svg" alt="download-video" role="button" />
+                    <img
+                      src="/Download Minimalistic.svg"
+                      alt="download-video"
+                      role="button"
+                    />
+                    <span>Yüklə</span>
                   </button>
                 </div>
               ))

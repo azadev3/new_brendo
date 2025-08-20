@@ -45,11 +45,15 @@ export interface SalesDataInterface {
 
 const ChartContents: React.FC = () => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
-  const [salesDataFromAPI, setSalesDataFromAPI] = React.useState<SalesDataInterface[]>([]);
+  const [salesDataFromAPI, setSalesDataFromAPI] = React.useState<SalesDataInterface[]>(
+    [],
+  );
   const [filter, setFilter] = React.useState<string>('');
   const [loading, setLoading] = React.useState(false);
 
@@ -86,13 +90,15 @@ const ChartContents: React.FC = () => {
   const barChartData = [
     {
       name: 'A',
-      paid: salesDataFromAPI.find(item => item['Ödənilib'])?.['Ödənilib'].items_count || 0,
+      paid:
+        salesDataFromAPI.find(item => item['Ödənilib'])?.['Ödənilib'].items_count || 0,
       pending:
         salesDataFromAPI.find(item => item['Ödəniş gözlənilir'])?.['Ödəniş gözlənilir']
           .items_count || 0,
       notSent:
-        salesDataFromAPI.find(item => item['Sorğu göndərilməyib'])?.['Sorğu göndərilməyib']
-          .items_count || 0,
+        salesDataFromAPI.find(item => item['Sorğu göndərilməyib'])?.[
+          'Sorğu göndərilməyib'
+        ].items_count || 0,
     },
   ];
 
@@ -102,7 +108,7 @@ const ChartContents: React.FC = () => {
       title: translation?.odenilib ?? '',
       tag: `${
         salesDataFromAPI.find(item => item['Ödənilib'])?.['Ödənilib'].items_count || 0
-      } satış`,
+      } ${translation?.satish_text ?? ''}`,
       name: 'A',
       color: '#FF82AC',
     },
@@ -112,7 +118,7 @@ const ChartContents: React.FC = () => {
       tag: `${
         salesDataFromAPI.find(item => item['Ödəniş gözlənilir'])?.['Ödəniş gözlənilir']
           .items_count || 0
-      } satış`,
+      } ${translation?.satish_text ?? ''}`,
       name: 'B',
       color: '#59E6F6',
     },
@@ -120,9 +126,10 @@ const ChartContents: React.FC = () => {
       id: 3,
       title: translation?.sorgugonderilmeyib ?? '',
       tag: `${
-        salesDataFromAPI.find(item => item['Sorğu göndərilməyib'])?.['Sorğu göndərilməyib']
-          .items_count || 0
-      } satış`,
+        salesDataFromAPI.find(item => item['Sorğu göndərilməyib'])?.[
+          'Sorğu göndərilməyib'
+        ].items_count || 0
+      } ${translation?.satish_text ?? ''}`,
       name: 'C',
       color: '#4C78FF',
     },
@@ -133,7 +140,7 @@ const ChartContents: React.FC = () => {
       id: 1,
       price: `${
         salesDataFromAPI.find(item => item['Ödənilib'])?.['Ödənilib'].total_amount || 0
-      }.00 Azn`,
+      }.00 RUBL`,
       tag: translation?.umumi_odenilen ?? '',
       color: '#7661e2',
     },
@@ -142,16 +149,17 @@ const ChartContents: React.FC = () => {
       price: `${
         salesDataFromAPI.find(item => item['Ödəniş gözlənilir'])?.['Ödəniş gözlənilir']
           .total_amount || 0
-      }.00 Azn`,
+      }.00 RUBL`,
       tag: translation?.gozlemede ?? '',
       color: '#59c7f6',
     },
     {
       id: 3,
       price: `${
-        salesDataFromAPI.find(item => item['Sorğu göndərilməyib'])?.['Sorğu göndərilməyib']
-          .total_amount || 0
-      }.00 Azn`,
+        salesDataFromAPI.find(item => item['Sorğu göndərilməyib'])?.[
+          'Sorğu göndərilməyib'
+        ].total_amount || 0
+      }.00 RUBL`,
       tag: translation?.sorgugonderilmeyib ?? '',
       color: '#ff82ac',
     },
@@ -201,7 +209,10 @@ const ChartContents: React.FC = () => {
                 <div className="item-chart-stat_left">
                   <h3>{data?.name}</h3>
                   <div className="colorize">
-                    <span className="color" style={{ backgroundColor: data?.color }}></span>
+                    <span
+                      className="color"
+                      style={{ backgroundColor: data?.color }}
+                    ></span>
                     <p>{data?.title}</p>
                   </div>
                 </div>

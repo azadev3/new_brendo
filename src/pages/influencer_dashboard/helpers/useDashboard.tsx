@@ -13,9 +13,11 @@ export interface DashboardElementsInterface {
 export const useDashboard = () => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
 
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   const DashboardElements: DashboardElementsInterface[] = [
     {
@@ -31,10 +33,10 @@ export const useDashboard = () => {
       to: 'kolleksiyalar',
     },
     {
-        id: 3,
-        title: "Story",
-        icon: "/TrafficEconomy.svg",
-        to: "story"
+      id: 3,
+      title: translation?.storiler_key_key ?? '',
+      icon: '/TrafficEconomy.svg',
+      to: 'story',
     },
     {
       id: 4,
