@@ -89,6 +89,7 @@ export default function Brends() {
                 <div className="px-[40px] max-sm:px-4">
                     <div className="flex items-center gap-2">
                         <Link
+                        reloadDocument
                             to={`/${lang}/${
                                 ROUTES.home[lang as keyof typeof ROUTES.home]
                             }`}

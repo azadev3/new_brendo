@@ -203,7 +203,7 @@ const DropdownItem = memo(({ data }: { data: Category }) => {
 
   return (
     <div className="flex flex-col w-full">
-      <Link to={currentPath}>
+      <Link reloadDocument to={currentPath}>
         <div className="flex flex-col w-full text-base">
           <div
             className={`flex overflow-hidden flex-row gap-5 justify-between px-4 py-3.5 w-full rounded-[100px] cursor-pointer transition-colors hover:bg-gray-200 ${
@@ -761,6 +761,7 @@ export default function Products({
 
             <div className="flex relative gap-2 items-center self-start text-base">
               <Link
+              reloadDocument
                 to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}
                 className="flex gap-2 items-center"
               >
@@ -1040,6 +1041,7 @@ export default function Products({
                       >
                         <div className="self-stretch my-auto">{item.title}</div>
                         <Link
+                        reloadDocument
                           to={`/${lang}/${
                             ROUTES.product[lang as keyof typeof ROUTES.product]
                           }`}

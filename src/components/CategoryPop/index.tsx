@@ -50,7 +50,7 @@ export default function CategoryNavigation({ handleClose }: { handleClose: () =>
           <div
             className={`flex items-center cursor-pointer justify-between p-2 rounded hover:bg-gray-100 transition-colors text-gray-700`}
           >
-            <Link to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}>
+            <Link reloadDocument to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}>
               <span className="flex flex-row gap-2 justify-center items-center">
                 <AiFillProduct className="w-5 h-5" />
                 {translation?.butun_mehsullar}
@@ -68,6 +68,7 @@ export default function CategoryNavigation({ handleClose }: { handleClose: () =>
                 <div className="space-y-4" key={Category2.id}>
                   <h3 className="font-medium text-[#3873C3] flex flex-row gap-2  items-center hover:text-[#3873C3] hover:underline cursor-pointer">
                     <Link
+                    reloadDocument
                       onClick={() => {
                         handleClose();
                       }}
@@ -82,6 +83,7 @@ export default function CategoryNavigation({ handleClose }: { handleClose: () =>
                     {Category2.third_categories.map(item => (
                       <li key={item.id}>
                         <Link
+                        reloadDocument
                           onClick={() => {
                             handleClose();
                           }}
@@ -125,7 +127,7 @@ function CategoryLink({
         active ? 'text-[#3873C3] font-medium' : 'text-gray-700'
       }`}
     >
-      <Link to={link}>
+      <Link reloadDocument to={link}>
         <span className="flex flex-row gap-2 justify-center items-center">{children}</span>
       </Link>
       <ChevronRight className="h-4 w-4" />

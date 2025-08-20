@@ -104,7 +104,7 @@ const BannerCard = memo(
             onClick={handleClick}
             className="text-[10px] md:text-[12px] lg:text-[14px] font-medium text-white hover:bg-white hover:text-black duration-300 border border-white border-solid rounded-full px-3 py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-2.5 transition-colors"
           >
-            {translation?.Məhsullara_bax}
+            {translation?.Məhsullara_bax_new}
           </button>
         </div>
       </div>

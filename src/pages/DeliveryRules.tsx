@@ -24,6 +24,7 @@ export default function DeliveryRules() {
                 <div className="">
                     <div className="flex items-center gap-2">
                         <Link
+                        reloadDocument
                             to={`/${lang}/${
                                 ROUTES.home[lang as keyof typeof ROUTES.product]
                             }`}

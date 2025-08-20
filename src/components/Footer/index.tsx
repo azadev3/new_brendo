@@ -345,6 +345,7 @@ const SocialLinks = React.memo(({ socials }: { socials: SocialMediaLink[] }) => 
   <div className="flex gap-2 items-center self-end h-[40px] w-full max-md:mt-10">
     {socials?.slice(0, 5).map((item: SocialMediaLink) => (
       <Link
+      reloadDocument
         key={item.id}
         to={item.url}
         target="_blank"

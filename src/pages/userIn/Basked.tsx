@@ -185,7 +185,7 @@ export default function Basked() {
       <main className="lg:mt-[0px] mt-0">
         <div className="px-[40px] pt-[40px] max-sm:px-4 mb-[28px]">
           <div className="flex items-center gap-2">
-            <Link to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}>
+            <Link reloadDocument to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}>
               <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
                 {tarnslation?.home}{' '}
               </h6>

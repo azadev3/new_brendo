@@ -76,6 +76,7 @@ export const ClothingList: React.FC<ClothingListProps> = ({ item }) => {
             {item?.subCategories?.map(
                 (subcategory: SubCategory, index: number) => (
                     <Link
+                    reloadDocument
                         className="w-full flex "
                         to={`/${lang}/${
                             ROUTES.product[lang as keyof typeof ROUTES.product]
@@ -132,6 +133,7 @@ const ClothingMenu: React.FC<ClothingMenuProps> = ({ data, translation }) => {
                 </>
             ))}
             <Link
+            reloadDocument
                 to={`/${lang}/${
                     ROUTES.product[lang as keyof typeof ROUTES.product]
                 }?discount=true`}
@@ -141,6 +143,7 @@ const ClothingMenu: React.FC<ClothingMenuProps> = ({ data, translation }) => {
                 </h2>
             </Link>
             <Link
+            reloadDocument
                 to={`/${lang}/${
                     ROUTES.brends[lang as keyof typeof ROUTES.brends]
                 }`}

@@ -90,7 +90,7 @@ const TimedSpecialNotification: React.FC<any> = ({
                         )
                     }
                 >
-                    {translation?.Məhsullara_bax}
+                    {translation?.Məhsullara_bax_new}
                 </button> */}
 
                 <button

@@ -80,7 +80,7 @@ export default function Sucses() {
       <main>
         <div className="px-[40px] max-sm:px-4 pt-[40px] mb-[28px] ">
           <div className="flex items-center gap-2 flex-wrap">
-            <Link to={`${lang}`}>
+            <Link reloadDocument to={`${lang}`}>
               <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
                 {tarnslation?.home}
               </h6>
@@ -92,6 +92,7 @@ export default function Sucses() {
             />
 
             <Link
+            reloadDocument
               to={`/${lang}/${ROUTES.order[lang as keyof typeof ROUTES.order]
                 }`}>
               <h6 className="text-nowrap self-stretch my-auto hover:text-blue-600">
@@ -397,6 +398,7 @@ export default function Sucses() {
               {tarnslation?.uğurlu_sifariş_desc}
             </p>
             <Link
+            reloadDocument
               to={`/${lang}/${ROUTES?.home[lang as keyof typeof ROUTES.home]}`}>
               <button className="px-[30px] py-[16px] rounded-[100px] border border-[#3873C3] border-opacity-25 flex flex-row gap-2 text-[16px] font-medium text-[#3873C3]">
                 {tarnslation?.uğurlu_sifariş_btn}

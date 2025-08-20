@@ -304,6 +304,7 @@ export default function Login() {
             <div className=" lg:mt-[60px] mt-8 text-base font-semibold text-center text-white text-opacity-80  max-md:max-w-full">
               <span>{tarnslation?.Hesabın_yoxdur}? </span>
               <Link
+              reloadDocument
                 to={`/${lang}/${ROUTES.register[lang as keyof typeof ROUTES.register]}`}
                 className="hover:underline"
               >

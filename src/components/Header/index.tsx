@@ -22,8 +22,8 @@ import Story from './story';
 import CategoryNavigation from '../CategoryPop';
 import { User as UserIcon } from 'lucide-react';
 import { AiFillProduct } from 'react-icons/ai';
-import { FaRubleSign } from 'react-icons/fa';
 import { create } from 'zustand';
+import { LoadingNoFix } from '../Loading';
 
 export type LanguageStore = {
   selectedLang: string;
@@ -73,7 +73,8 @@ export default function Header() {
   const navigate = useNavigate();
   const CatalogBtnRef = useRef<HTMLDivElement | null>(null);
   const CAtalogDiv = useRef<HTMLDivElement | null>(null);
-  const [refetchBaskedState, setRefetchBaskedState] = useRecoilState<boolean>(RefetchBasked);
+  const [refetchBaskedState, setRefetchBaskedState] =
+    useRecoilState<boolean>(RefetchBasked);
   const BaskedBtnRef = useRef<HTMLDivElement | null>(null);
   const BaskedDiv = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -156,13 +157,17 @@ export default function Header() {
 
           Navigae(
             newPage
-              ? `/${Lang}/${ROUTES[newPage][Lang as keyof typeof ROUTES.home]}/${NewSlug}`
+              ? `/${Lang}/${
+                  ROUTES[newPage][Lang as keyof typeof ROUTES.home]
+                }/${NewSlug}`
               : '/',
           );
           return;
         }
       }
-      Navigae(newPage ? `/${Lang}/${ROUTES[newPage][Lang as keyof typeof ROUTES.home]}` : '/');
+      Navigae(
+        newPage ? `/${Lang}/${ROUTES[newPage][Lang as keyof typeof ROUTES.home]}` : '/',
+      );
     } else {
       Navigae(`/${Lang}/${ROUTES.home[Lang as keyof typeof ROUTES.home]}`);
     }
@@ -250,8 +255,15 @@ export default function Header() {
     },
   });
   const UpdateBaskedmutation = useMutation({
-    mutationFn: ({ id, price, quantity }: { id: number; price: string; quantity: number }) =>
-      UpdateBasked(id, price, quantity),
+    mutationFn: ({
+      id,
+      price,
+      quantity,
+    }: {
+      id: number;
+      price: string;
+      quantity: number;
+    }) => UpdateBasked(id, price, quantity),
     onSuccess: () => {
       toast.success(translation?.say_artirildi || '');
       queryClient.invalidateQueries({ queryKey: ['basket_items'] });
@@ -267,20 +279,25 @@ export default function Header() {
     'home_categories',
     [lang],
   );
-  const { data: FilteredProduct } = GETRequest<ProductResponse>(
-    `/products${
-      debouncedValue
-        ? `?search=${debouncedValue} ${
-            currentSubCategoryId === 0 ? '' : `&sub_category_id=${currentSubCategoryId}`
-          }`
-        : ``
-    }`,
-    'products',
-    [lang, debouncedValue, currentSubCategoryId],
+  const { data: FilteredProduct, isLoading: productsLoading } =
+    GETRequest<ProductResponse>(
+      `/products${
+        debouncedValue
+          ? `?search=${debouncedValue} ${
+              currentSubCategoryId === 0
+                ? ''
+                : `&sub_category_id=${currentSubCategoryId}`
+            }`
+          : ``
+      }`,
+      'products',
+      [lang, debouncedValue, currentSubCategoryId],
+    );
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
   );
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
   // const { data: basked, isLoading: baskedLoading } = GETRequest<Basket>(
   //   `/basket_items`,
   //   'basket_items',
@@ -445,6 +462,7 @@ export default function Header() {
       <div className=" lg:flex hidden flex-col relative bg-white">
         <div className="flex overflow-hidden gap-5  justify-between items-center px-10 py-2.5 w-full text-black border-b border-black border-opacity-10 max-md:px-5 max-md:max-w-full">
           <Link
+            reloadDocument
             className="w-[200px]"
             to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}
           >
@@ -459,6 +477,7 @@ export default function Header() {
             <div className="flex flex-row justify-center items-center w-full gap-3">
               {categories?.map((category: Category) => (
                 <Link
+                  reloadDocument
                   to={`/${lang}/${
                     ROUTES.product[lang as keyof typeof ROUTES.product]
                   }?category=${category.id}`}
@@ -480,14 +499,18 @@ export default function Header() {
                 <div className="text-[14px]">{translation?.Brendlər}</div>
               </Link> */}
               <Link
+                reloadDocument
                 to={`/${lang}/${
                   ROUTES.product[lang as keyof typeof ROUTES.product]
                 }?discount=true`}
               >
-                <div className="text-[14px]"> {translation?.Endirim}</div>
+                <div className="text-[14px]">{translation?.Endirim}</div>
               </Link>
-              <Link to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}>
-                <div className="text-[14px]">{translation?.Bütün_məhsullar}</div>
+              <Link
+                reloadDocument
+                to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}
+              >
+                <div className="text-[14px]">{translation?.butun_mehsullar_new}</div>
               </Link>
             </div>
             <div className="flex items-center justify-between w-full ">
@@ -532,14 +555,18 @@ export default function Header() {
                         if (userStr && hasUserType !== 'influencer') {
                           Navigae(
                             `/${lang}/${
-                              ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]
+                              ROUTES.userSettings[
+                                lang as keyof typeof ROUTES.userSettings
+                              ]
                             }`,
                           );
                         } else if (hasUserType === 'influencer') {
                           window.location.href = `/${lang}/influencer/kolleksiyalar`;
                         } else {
                           Navigae(
-                            `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
+                            `/${lang}/${
+                              ROUTES.login[lang as keyof typeof ROUTES.login]
+                            }`,
                           );
                         }
                       }}
@@ -558,11 +585,16 @@ export default function Header() {
                           setSearchValue('');
 
                           Navigae(
-                            `/${lang}/${ROUTES.liked[lang as keyof typeof ROUTES.liked]}`,
+                            `/${lang}/${
+                              ROUTES.liked[lang as keyof typeof ROUTES.liked]
+                            }`,
                           );
+                          window.location.reload();
                         } else {
                           Navigae(
-                            `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
+                            `/${lang}/${
+                              ROUTES.login[lang as keyof typeof ROUTES.login]
+                            }`,
                           );
                         }
                       }}
@@ -592,7 +624,10 @@ export default function Header() {
                       }}
                     >
                       <div className="w-12 h-12 sm:w-[48px] sm:h-[48px] rounded-full bg-[#3873C3] flex justify-center items-center relative">
-                        <img src="/svg/basked.svg" className="w-6 h-6 sm:w-auto sm:h-auto" />
+                        <img
+                          src="/svg/basked.svg"
+                          className="w-6 h-6 sm:w-auto sm:h-auto"
+                        />
                         {hasItems && hasItems.length > 0 && (
                           <div className="w-[14px] h-[14px] sm:w-[12px] sm:h-[12px] flex justify-center items-center text-white text-xs sm:text-[8px] bg-[#FC394C] rounded-full absolute top-[8px] right-[8px]">
                             {hasItems.length}
@@ -605,7 +640,10 @@ export default function Header() {
                   {isRulesPage || isDynamicPage || isCollectionPage ? (
                     <div className=" flex flex-row gap-2 cursor-pointer">
                       <div
-                        onClick={() => setSelectedLang('ru')}
+                        onClick={() => {
+                          setSelectedLang('ru');
+                          window.location.reload();
+                        }}
                         className={`w-[36px] h-[36px] rounded-md ${
                           selectedLang === 'ru' ? 'bg-[#B1C7E4]' : 'bg-[#F5F5F5]'
                         } text-black flex justify-center items-center`}
@@ -616,7 +654,10 @@ export default function Header() {
                         className={`w-[36px] h-[36px] rounded-md ${
                           selectedLang === 'en' ? 'bg-[#B1C7E4]' : 'bg-[#F5F5F5]'
                         } text-black flex justify-center items-center`}
-                        onClick={() => setSelectedLang('en')}
+                        onClick={() => {
+                          setSelectedLang('en');
+                          window.location.reload();
+                        }}
                       >
                         EN
                       </div>
@@ -624,7 +665,10 @@ export default function Header() {
                   ) : (
                     <div className=" flex flex-row gap-2 cursor-pointer">
                       <button
-                        onClick={() => HandleSetUrlByLang('ru')}
+                        onClick={() => {
+                          HandleSetUrlByLang('ru');
+                          window.location.reload();
+                        }}
                         className={`w-[36px] h-[36px] rounded-md ${
                           lang === 'ru' ? 'bg-[#B1C7E4]' : 'bg-[#F5F5F5]'
                         } text-black flex justify-center items-center`}
@@ -635,7 +679,10 @@ export default function Header() {
                         className={`w-[36px] h-[36px] rounded-md ${
                           lang === 'en' ? 'bg-[#B1C7E4]' : 'bg-[#F5F5F5]'
                         } text-black flex justify-center items-center`}
-                        onClick={() => HandleSetUrlByLang('en')}
+                        onClick={() => {
+                          HandleSetUrlByLang('en');
+                          window.location.reload();
+                        }}
                       >
                         EN
                       </div>
@@ -758,54 +805,41 @@ export default function Header() {
               <div className="text-sm text-black text-opacity-60">
                 {translation?.Məhsullar}
               </div>
+
               <div className="grid xl:grid-cols-2 grid-cols-1 max-h-[270px] overflow-y-scroll flex-col mt-5 w-full gap-4">
-                {FilteredProduct?.data?.map((item: Product) => (
-                  <div
-                    className="flex gap-2.5 items-center w-full min-w-[120px] cursor-pointer"
-                    key={item.id}
-                    onClick={() =>
-                      navigate(
-                        `/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}/${
-                          item.slug[lang as keyof typeof item.slug]
-                        }`,
-                      )
-                    }
-                  >
-                    <img
-                      loading="lazy"
-                      src={item.image}
-                      className="object-cover shrink-0 self-stretch my-auto rounded-3xl aspect-square w-[120px]"
-                    />
-                    <div className="flex flex-col justify-center self-stretch my-auto">
-                      <div className="text-sm text-black">{item.title}</div>
-                      <div className="mt-2.5 text-base font-semibold text-black">
-                        {item?.discount !== null &&
-                          Number(item.discount) > 0 &&
-                          item.discounted_price}
-                      </div>
-                      <div className="flex flex-row gap-2">
-                        {item?.discount !== null && Number(item.discount) > 0 ? (
-                          <>
-                            <div className="md:mt-3 font-semibold flex items-center text-[14px] line-through opacity-60">
-                              <span className="text-[14px]">{item?.price}</span>
-                              <FaRubleSign className="text-[12px] md:mt-2" />
-                            </div>
-                            <div className="md:mt-3 font-semibold flex items-center">
-                              <span className="text-[18px]">{item?.discounted_price}</span>
-                              <FaRubleSign className="text-[13px] mt-2" />
-                            </div>
-                          </>
-                        ) : (
-                          <div className="md:mt-3 font-semibold flex items-center">
-                            <span className="text-[18px]">{item?.price}</span>
-                            <FaRubleSign className="text-[13px] mt-2" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                {productsLoading ? (
+                  <div className="flex justify-center items-center w-full h-[100px]">
+                    <LoadingNoFix />
                   </div>
-                ))}
-                {FilteredProduct?.data?.length === 0 && <p>Heçnə tapılmadı</p>}
+                ) : (
+                  <>
+                    {FilteredProduct?.data?.map((item: Product) => (
+                      <div
+                        className="flex gap-2.5 items-center w-full min-w-[120px] cursor-pointer"
+                        key={item.id}
+                        onClick={() =>
+                          navigate(
+                            `/${lang}/${
+                              ROUTES.product[lang as keyof typeof ROUTES.product]
+                            }/${item.slug[lang as keyof typeof item.slug]}`,
+                          )
+                        }
+                      >
+                        <img
+                          loading="lazy"
+                          src={item.image}
+                          className="object-cover shrink-0 self-stretch my-auto rounded-3xl aspect-square w-[120px]"
+                        />
+                        <div className="flex flex-col justify-center self-stretch my-auto">
+                          <div className="text-sm text-black">{item.title}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {FilteredProduct?.data?.length === 0 && (
+                      <p>{translation?.hecne_tapilmadi_key ?? ''}</p>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -833,7 +867,10 @@ export default function Header() {
               <div className="flex gap-2 items-center py-0.5 text-sm font-medium text-blue-600 whitespace-nowrap border-b border-solid border-b-blue-600 cursor-pointer">
                 <div
                   onClick={() => {
-                    navigate(`/${lang}/${ROUTES.order[lang as keyof typeof ROUTES.order]}`);
+                    navigate(
+                      `/${lang}/${ROUTES.order[lang as keyof typeof ROUTES.order]}`,
+                    );
+                    window.location.reload();
                   }}
                   className="self-stretch my-auto"
                 >
@@ -981,7 +1018,10 @@ export default function Header() {
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full">
-                    <img src="/images/empty_basked.png" className="w-[100px] aspect-square" />
+                    <img
+                      src="/images/empty_basked.png"
+                      className="w-[100px] aspect-square"
+                    />
                     <div className="text-lg font-semibold text-gray-500">
                       {translation?.basket_empty}
                     </div>
@@ -1004,8 +1044,12 @@ export default function Header() {
                 onClick={() => {
                   if (User) {
                     navigate('/user/basked/confirm');
+                    window.location.reload();
                   } else {
-                    navigate(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
+                    navigate(
+                      `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
+                    );
+                    window.location.reload();
                   }
                 }}
                 className="gap-2.5 self-stretch px-10 py-4 text-base font-medium text-white bg-blue-600 border border-blue-600 border-solid rounded-[100px] max-md:px-5"
@@ -1020,7 +1064,7 @@ export default function Header() {
       {/* mobil header */}
       <div className="lg:hidden items-center flex h-[68px] px-4  justify-between w-screen bg-white z-50">
         {isSearchOpen || (
-          <Link to={'/'}>
+          <Link reloadDocument to={'/'}>
             <img
               loading="lazy"
               srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/0810c4aeebbd64a3e1b72741797d34b3b9cdb99d6d6af4238830cc7f449ae1bc?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
@@ -1052,7 +1096,13 @@ export default function Header() {
               >
                 <rect width="40" height="40" rx="20" fill="#F5F5F5" />
                 <g clipPath="url(#clip0_921_3507)">
-                  <circle cx="19.1667" cy="19.1665" r="7.5" stroke="black" strokeWidth="1.5" />
+                  <circle
+                    cx="19.1667"
+                    cy="19.1665"
+                    r="7.5"
+                    stroke="black"
+                    strokeWidth="1.5"
+                  />
                   <path
                     d="M28.1767 27.4791C28.1244 27.558 28.03 27.6525 27.8411 27.8413C27.6523 28.0302 27.5579 28.1246 27.479 28.1768C27.0168 28.4829 26.3916 28.3251 26.1299 27.8365C26.0853 27.7531 26.0469 27.6252 25.9703 27.3693C25.8865 27.0898 25.8446 26.95 25.8365 26.8517C25.7889 26.2725 26.2723 25.789 26.8515 25.8367C26.9498 25.8448 27.0896 25.8867 27.3691 25.9704C27.625 26.0471 27.7529 26.0854 27.8363 26.1301C28.325 26.3918 28.4827 27.017 28.1767 27.4791Z"
                     stroke="black"
@@ -1062,7 +1112,12 @@ export default function Header() {
                 </g>
                 <defs>
                   <clipPath id="clip0_921_3507">
-                    <rect width="20" height="20" fill="white" transform="translate(10 10)" />
+                    <rect
+                      width="20"
+                      height="20"
+                      fill="white"
+                      transform="translate(10 10)"
+                    />
                   </clipPath>
                 </defs>
               </svg>
@@ -1140,9 +1195,9 @@ export default function Header() {
                     key={item.id}
                     onClick={() => {
                       navigate(
-                        `/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}/${
-                          item.slug[lang as keyof typeof item.slug]
-                        }`,
+                        `/${lang}/${
+                          ROUTES.product[lang as keyof typeof ROUTES.product]
+                        }/${item.slug[lang as keyof typeof item.slug]}`,
                       );
                       setIsSearchOpen(false);
                     }}
@@ -1168,6 +1223,7 @@ export default function Header() {
               }}
             >
               <Link
+                reloadDocument
                 onClick={() => {
                   setShowAside(false);
                 }}
@@ -1220,7 +1276,9 @@ export default function Header() {
                       }`,
                     );
                   } else {
-                    Navigae(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
+                    Navigae(
+                      `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
+                    );
                   }
                 }}
                 className={`w-[40px] h-[40px] aspect-square rounded-full duration-300  bg-opacity-40 bg-blur-[4px] flex justify-center items-center  `}
@@ -1273,7 +1331,9 @@ export default function Header() {
                     // }
                     Navigae(`/basked/sifarislerim`);
                   } else {
-                    Navigae(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
+                    Navigae(
+                      `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`,
+                    );
                   }
                 }}
                 className="w-[40px] h-[40px] aspect-square rounded-full duration-300 bg-blur-[4px] bg-[#F5F5F5] flex justify-center items-center relative"
@@ -1343,6 +1403,7 @@ export default function Header() {
               <div className="flex flex-row justify-between items-center px-4 py-[16px] border-b mb-2 border-black  w-full   border-opacity-10  duration-300 left-0  min-h-[96px]">
                 {CurrentCategory === -1 ? (
                   <Link
+                    reloadDocument
                     className="w-[200px] h-[98px] "
                     to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}
                   >
@@ -1353,7 +1414,10 @@ export default function Header() {
                     />
                   </Link>
                 ) : (
-                  <div onClick={() => setCurrentCategory(-1)} className="flex flex-row gap-4">
+                  <div
+                    onClick={() => setCurrentCategory(-1)}
+                    className="flex flex-row gap-4"
+                  >
                     <svg
                       width="24"
                       height="24"
@@ -1401,6 +1465,7 @@ export default function Header() {
               </div>
               <div className="w-full bg-red max-h-[70%] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
                 <Link
+                  reloadDocument
                   to={`/${lang}/${
                     ROUTES.product[lang as keyof typeof ROUTES.product]
                   }?discount=true`}
@@ -1462,12 +1527,17 @@ export default function Header() {
                   }}
                   className="h-[60px] w-full bg-white hover:bg-slate-200 flex flex-row gap-3 border-b-2 border-black  border-opacity-10  items-center justify-between pb-[] px-[16px] cursor-pointer"
                 >
-                  <Link to={`/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`}>
+                  <Link
+                    reloadDocument
+                    to={`/${lang}/${
+                      ROUTES.product[lang as keyof typeof ROUTES.product]
+                    }`}
+                  >
                     <div className="flex flex-row items-center gap-3  ">
                       <div className="w-10 aspect-square rounded-full bg-[#F0F6FF] flex justify-center items-center">
                         <AiFillProduct />
                       </div>
-                      {translation?.Bütün_məhsullar}
+                      {translation?.butun_mehsullar_new}
                     </div>
                   </Link>
 
@@ -1495,6 +1565,7 @@ export default function Header() {
                     key={item.id}
                   >
                     <Link
+                      reloadDocument
                       to={`/${lang}/${
                         ROUTES.product[lang as keyof typeof ROUTES.product]
                       }?category=${item.id}`}
@@ -1540,6 +1611,7 @@ export default function Header() {
                   ?.find(item => item.id === CurrentCategory)
                   ?.subCategories?.map(item => (
                     <Link
+                      reloadDocument
                       onClick={() => {
                         setShowAside(false);
                       }}
@@ -1550,7 +1622,9 @@ export default function Header() {
                     >
                       {' '}
                       <div className="h-[60px] w-full bg-white hover:bg-slate-200 flex flex-row gap-3 border-b-2 border-black  border-opacity-10  items-center justify-between pb-[] px-[16px] cursor-pointer">
-                        <div className="flex flex-row items-center gap-3  ">{item.title}</div>
+                        <div className="flex flex-row items-center gap-3  ">
+                          {item.title}
+                        </div>
                         <svg
                           width="24"
                           height="24"

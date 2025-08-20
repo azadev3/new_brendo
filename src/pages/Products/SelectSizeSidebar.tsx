@@ -104,8 +104,8 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
       }
 
       const formData = new FormData();
-      formData.append('clothing_image', clothImage, clothImage.name);
-      formData.append('user_image', humanImage, humanImage.name);
+      formData.append('clothing_image', humanImage, humanImage.name);
+      formData.append('user_image', clothImage, clothImage.name);
 
       const res = await axios.post('https://admin.brendoo.com/api/swap-clothing', formData, {
         headers: {
@@ -296,6 +296,7 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
 
           <div className="flex w-full gap-4 mt-8 justify-start">
             <Link
+            reloadDocument
               className="font-[400] text-[14px] text-[#3873C3] hover:text-[blue] transition-[300ms]"
               to={`/условия-и-положения/${lang}/${
                 dataRulesPage

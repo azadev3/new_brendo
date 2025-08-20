@@ -43,7 +43,7 @@ export interface CollectionsInterfaceApi {
 }
 
 const Collections: React.FC = () => {
-  const { lang } = useParams<{ lang: string }>();
+  const { lang = 'ru' } = useParams<{ lang: string }>();
   const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
     lang,
   ]);

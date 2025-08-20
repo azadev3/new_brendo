@@ -30,7 +30,7 @@ export default function Liked() {
             <main className=" lg:mt-[40px] mt-0">
                 <div className="px-[40px] max-sm:px-4">
                     <div className="flex items-center gap-2">
-                        <Link to={`${lang}`}>
+                        <Link reloadDocument to={`${lang}`}>
                             <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
                                 {tarnslation?.home}{' '}
                             </h6>

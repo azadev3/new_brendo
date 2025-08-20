@@ -82,7 +82,7 @@ const DynamicPageTwo: React.FC = () => {
       <main className="lg:mt-[40px] px-[40px] max-sm:px-4 mb-[100px] mt-6">
         <div className="px-[40px] max-sm:px-4">
           <div className="flex items-center gap-2">
-            <Link to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}>
+            <Link reloadDocument to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}>
               <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
                 {translation?.home || ""}
               </h6>

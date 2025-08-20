@@ -12,7 +12,7 @@ export function BreadCump() {
 
   return (
     <div className="flex gap-2 items-center flex-wrap text-base text-black text-opacity-70">
-      <Link to="/">
+      <Link reloadDocument to="/">
         <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
           {tarnslation?.ana_sehife_key ?? ''}
         </h6>
@@ -29,7 +29,7 @@ export function BreadCump() {
               className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
             />
             {!isLast ? (
-              <Link to={routeTo}>
+              <Link reloadDocument to={routeTo}>
                 <h6 className="text-nowrap self-stretch my-auto hover:text-blue-600">
                   {name.charAt(0).toUpperCase() + name.slice(1)}
                 </h6>

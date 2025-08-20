@@ -332,6 +332,7 @@ const Payments: React.FC = () => {
                           <td>
                             {data?.isPaid ? (
                               <Link
+                              reloadDocument
                                 to={`${baseUrlInf}/demandPayment/createFacture/${data?.id}`}
                                 target="_blank"
                                 style={{

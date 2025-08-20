@@ -29,6 +29,7 @@ export default function Aboutus() {
                 <div className="px-[40px] max-sm:px-4 max-sm:pt-6 pt-[40px] mb-[28px]">
                     <div className="flex items-center gap-2">
                         <Link
+                        reloadDocument
                             to={`/${lang}/${
                                 ROUTES.home[lang as keyof typeof ROUTES.product]
                             }`}

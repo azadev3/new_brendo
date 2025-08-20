@@ -1,7 +1,8 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// ❗ Devtools’u koşullu import edeceğiz
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { RecoilRoot } from "recoil";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { HelmetProvider } from "react-helmet-async";
@@ -13,10 +14,16 @@ import Header from "./components/Header";
 import { useCollectionModal } from "./contexts/CollectionModalProvider";
 import { CollectionProvider } from "./pages/influencer_dashboard/CollectionProvider";
 
-// Lazy load pages - bu hissəni dəyişmədim
-const Home = lazy(() => import("./pages/Home"));
-const Products = lazy(() => import("./pages/Products"));
-const ProductId = lazy(() => import("./pages/Products/Id"));
+/** ---- LAZY ROUTES ---- **/
+const importHome = () => import("./pages/Home");
+const Home = lazy(importHome);
+
+const importProducts = () => import("./pages/Products");
+const Products = lazy(importProducts);
+
+const importProductId = () => import("./pages/Products/Id");
+const ProductId = lazy(importProductId);
+
 const Aboutus = lazy(() => import("./pages/Aboutus"));
 const Liked = lazy(() => import("./pages/Liked"));
 const Brends = lazy(() => import("./pages/Brends"));
@@ -44,15 +51,19 @@ const DynamicPage = lazy(() => import("./featurePages/DynamicPage"));
 const RulesPage = lazy(() => import("./featurePages/RulesPage"));
 const CollectionPage = lazy(() => import("./CollectionPage"));
 const MainDashboard = lazy(() => import("./pages/influencer_dashboard/MainDashboard"));
-const CreateCollectionModal = lazy(() => import("./pages/influencer_dashboard/ui/CreateCollectionModal"));
-const AddProductCollection = lazy(() => import("./pages/influencer_dashboard/ui/AddProductCollection"));
 
-// QueryClient - sadə konfiqurasiya
+// ❗ Modalları sadece açılınca yükleyelim
+const importCreateCollectionModal = () => import("./pages/influencer_dashboard/ui/CreateCollectionModal");
+const importAddProductCollection = () => import("./pages/influencer_dashboard/ui/AddProductCollection");
+const CreateCollectionModal = lazy(importCreateCollectionModal);
+const AddProductCollection = lazy(importAddProductCollection);
+
+/** ---- REACT QUERY ---- **/
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 dəqiqə
-      gcTime: 10 * 60 * 1000,   // 10 dəqiqə
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
       retry: 1,
       refetchOnWindowFocus: false,
     },
@@ -72,94 +83,144 @@ const App = () => {
 
   const type = localStorage.getItem("user_type");
 
+  /** ---- Favicon: localStorage cache + TTL ---- **/
   const [favicon, setFavicon] = useState<{ image: string }>({ image: "" });
   const [faviconLoading, setFaviconLoading] = useState(false);
 
-  // Favicon yükləmə - sadə versiya
   useEffect(() => {
-    let isMounted = true;
+    // preconnect & dns-prefetch (ilk API latency’ini azaltır)
+    const addLink = (rel: string, href: string) => {
+      if (document.head.querySelector(`link[rel="${rel}"][href="${href}"]`)) return;
+      const l = document.createElement("link");
+      l.rel = rel;
+      l.href = href;
+      document.head.appendChild(l);
+    };
+    addLink("preconnect", "https://admin.brendoo.com");
+    addLink("dns-prefetch", "//admin.brendoo.com");
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const KEY = "favicon_cache_v1";
+    const TTL = 7 * 24 * 60 * 60 * 1000; // 7 gün
+
+    const cached = localStorage.getItem(KEY);
+    if (cached) {
+      try {
+        const obj = JSON.parse(cached) as { url: string; ts: number };
+        if (Date.now() - obj.ts < TTL) {
+          setFavicon({ image: obj.url });
+        }
+      } catch {}
+    }
+
     const getFavicon = async () => {
       setFaviconLoading(true);
       try {
-        const res = await axios.get("https://admin.brendoo.com/api/favicon");
-        if (isMounted && res.data?.image) {
-          setFavicon({ image: res.data.image });
+        const res = await axios.get("https://admin.brendoo.com/api/favicon", { timeout: 5000 });
+        const url = res.data?.image;
+        if (mounted && url) {
+          setFavicon({ image: url });
+          localStorage.setItem(KEY, JSON.stringify({ url, ts: Date.now() }));
         }
-      } catch (error) {
-        console.log("Favicon yüklənə bilmədi:", error);
+      } catch (e) {
+        // sessiz geç
       } finally {
-        if (isMounted) setFaviconLoading(false);
+        if (mounted) setFaviconLoading(false);
       }
     };
-    getFavicon();
-    return () => {
-      isMounted = false;
-    };
+
+    // cache yoksa ya da süresi dolduysa çek
+    if (!favicon.image) getFavicon();
+
+    return () => { mounted = false; };
   }, []);
 
-  // Favicon DOM-a əlavə etmə
   useEffect(() => {
     if (favicon?.image) {
-      let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement | null;
       if (!link) {
         link = document.createElement("link");
         link.rel = "icon";
         document.head.appendChild(link);
       }
-      link.setAttribute("href", favicon.image);
+      link.href = favicon.image;
     }
   }, [favicon.image]);
 
   // Scroll to top
   useEffect(() => {
-    if (
-        !location.pathname.includes("онас#faq") &&
-        !location.pathname.includes("about#faq")
-    ) {
+    if (!location.pathname.includes("онас#faq") && !location.pathname.includes("about#faq")) {
       window.scrollTo(0, 0);
     }
   }, [location.pathname]);
 
-  // Favicon yüklənərkən çox uzun gözləməyək
-  if (faviconLoading) {
-    // 3 saniyədən çox gözləməyək
-    setTimeout(() => {
-      if (faviconLoading) {
-        setFaviconLoading(false);
-      }
-    }, 3000);
+  /** ---- 🧠 Idle prefetch: anasayfadayken olası sayfaları indir ---- **/
+  useEffect(() => {
+    if (location.pathname === "/") {
+      const idle = (cb: () => void) =>
+        ("requestIdleCallback" in window)
+          ? (window as any).requestIdleCallback(cb, { timeout: 2000 })
+          : setTimeout(cb, 500);
 
+      idle(() => {
+        import(/* webpackPrefetch: true */ "./pages/Products");
+        import(/* webpackPrefetch: true */ "./pages/Brends");
+        import(/* webpackPrefetch: true */ "./pages/Products/Id");
+      });
+    }
+  }, [location.pathname]);
+
+  // favicon loading timeout => render içinde setTimeout kurma!
+  useEffect(() => {
+    if (!faviconLoading) return;
+    const t = setTimeout(() => setFaviconLoading(false), 3000);
+    return () => clearTimeout(t);
+  }, [faviconLoading]);
+
+  if (faviconLoading) {
     return <Loading />;
   }
 
   return (
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <HelmetProvider>
-          <CollectionProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <HelmetProvider>
+        <CollectionProvider>
           <RecoilRoot>
             <QueryClientProvider client={queryClient}>
-              <ReactQueryDevtools initialIsOpen={false} />
-
-              {/* Influencer modallar */}
-              {type === "influencer" && (
-                  <Suspense fallback={<Loading />}>
-                    <CreateCollectionModal
-                        opener={createCollectionModal}
-                        onClose={() => setCreateCollectionModal(false)}
-                    />
-                    <AddProductCollection
-                        opener={addProductCollection}
-                        onClose={() => setAddProductCollection(false)}
-                    />
-                  </Suspense>
+              {/* Devtools’u sadece geliştirmede yükle */}
+              {process.env.NODE_ENV !== "production" && (
+                <React.Suspense fallback={null}>
+                  {/** @ts-ignore dinamik import */}
+                  {React.createElement(lazy(() => import("@tanstack/react-query-devtools").then(m => ({ default: m.ReactQueryDevtools }))), { initialIsOpen: false })}
+                </React.Suspense>
               )}
 
-              {/* Routing - MƏHZ BURDA MƏSƏLƏ OLARAQ ÇOX MÜRƏKKƏBLƏŞDİRMİRİK */}
+              {/* Influencer modallar: sadece açıkken chunk indir */}
+              {type === "influencer" && createCollectionModal && (
+                <Suspense fallback={<Loading />}>
+                  <CreateCollectionModal
+                    opener={createCollectionModal}
+                    onClose={() => setCreateCollectionModal(false)}
+                  />
+                </Suspense>
+              )}
+              {type === "influencer" && addProductCollection && (
+                <Suspense fallback={<Loading />}>
+                  <AddProductCollection
+                    opener={addProductCollection}
+                    onClose={() => setAddProductCollection(false)}
+                  />
+                </Suspense>
+              )}
+
+              {/* Routing */}
               <Suspense fallback={<Loading />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   {!location.pathname?.includes("influencer") && (
-                      <Route path="/:lang/:page" element={<PageByLang />} />
+                    <Route path="/:lang/:page" element={<PageByLang />} />
                   )}
                   <Route path="/:lang/:page/:slug" element={<InnerPageByLang />} />
                   <Route path="/poducts" element={<Products />} />
@@ -195,26 +256,25 @@ const App = () => {
 
                   {/* Influencer */}
                   {type === "influencer" && (
-                      <Route
-                          path="/:lang/influencer/*"
-                          element={
-                            <div style={{ paddingTop: "40px" }}>
-                              <Header />
-                              <MainDashboard />
-                            </div>
-                          }
-                      />
+                    <Route
+                      path="/:lang/influencer/*"
+                      element={
+                        <div style={{ paddingTop: "40px" }}>
+                          <Header />
+                          <MainDashboard />
+                        </div>
+                      }
+                    />
                   )}
                 </Routes>
               </Suspense>
 
-              {/* Toast */}
               <Toaster containerStyle={{ zIndex: 100000000 }} />
             </QueryClientProvider>
           </RecoilRoot>
-          </CollectionProvider>
-        </HelmetProvider>
-      </GoogleOAuthProvider>
+        </CollectionProvider>
+      </HelmetProvider>
+    </GoogleOAuthProvider>
   );
 };
 

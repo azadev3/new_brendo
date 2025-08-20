@@ -32,6 +32,7 @@ function UserAside({ active }: { active: number }) {
       </div>
       <hr className="mt-4 w-full max-sm:hidden border border-solid border-black border-opacity-10" />
       <Link
+      reloadDocument
         to={`/${lang}/${
           ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]
         }`}
@@ -75,6 +76,7 @@ function UserAside({ active }: { active: number }) {
         </div>
       </Link>
       <Link
+      reloadDocument
         to={`/${lang}/${ROUTES.orders[lang as keyof typeof ROUTES.orders]}`}
       >
         <div
@@ -128,6 +130,7 @@ function UserAside({ active }: { active: number }) {
         </div>
       </Link>
       <Link
+      reloadDocument
         to={`/${lang}/${
           ROUTES.likedUser[lang as keyof typeof ROUTES.likedUser]
         }`}
@@ -163,6 +166,7 @@ function UserAside({ active }: { active: number }) {
         </div>
       </Link>
       <Link
+      reloadDocument
         to={`/${lang}/${
           ROUTES.notification[lang as keyof typeof ROUTES.notification]
         }`}
@@ -219,6 +223,7 @@ function UserAside({ active }: { active: number }) {
       </Link> */}
       {/* feature link */}
       <Link
+      reloadDocument
         to={`/${lang}/${ROUTES.address[lang as keyof typeof ROUTES.address]}`}
       >
         <div className={`return-link-wrapper ${active === 10 ? "active" : ""}`}>
