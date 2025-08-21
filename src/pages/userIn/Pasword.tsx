@@ -9,6 +9,14 @@ import toast from 'react-hot-toast';
 import ROUTES from '../../setting/routes';
 
 export default function Password() {
+  const { lang } = useParams<{ lang: string }>() || { lang: 'ru' };
+
+  const { data: tarnslation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
+
   const [loading, setLoading] = useState(false);
   const [formStatus, setFormStatus] = useState<{
     message: string;
@@ -21,13 +29,14 @@ export default function Password() {
   };
 
   const validationSchema = Yup.object({
-    email: Yup.string().email('Invalid email address').required('Email is required'),
+    email: Yup.string()
+      .email(tarnslation?.is_r_12 ?? '')
+      .required(tarnslation?.is_r_7 ?? ''),
     // password: Yup.string()
     //     .min(6, 'Password must be at least 6 characters')
     //     .required('Password is required'),
   });
   const navigate = useNavigate();
-  const { lang } = useParams<{ lang: string }>() || { lang: 'ru' };
   const { data: registerImage } = GETRequest<{ image: string }>(
     `/registerImage`,
     'registerImage',
@@ -56,9 +65,6 @@ export default function Password() {
       });
   };
 
-  const { data: tarnslation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
   return (
     <div className="flex overflow-hidden flex-col bg-white">
       <div className="flex relative flex-col w-full h-[100vh] max-md:max-w-full justify-center items-center px-[40px]">
@@ -101,7 +107,7 @@ export default function Password() {
                         <Field
                           type="email"
                           name="email"
-                          placeholder="Email"
+                          placeholder={tarnslation?.Email ?? ''}
                           className="w-full bg-transparent outline-none"
                         />
                       </div>
@@ -110,29 +116,6 @@ export default function Password() {
                         component="div"
                         className="text-red-500 text-sm mt-1"
                       />
-                      {/* <div className="flex flex-col mt-3 w-full max-md:max-w-full">
-                                                <div className="flex overflow-hidden gap-5 justify-between px-5 py-4 w-full text-base bg-white border border-solid border-black border-opacity-10 rounded-full text-black text-opacity-60 max-md:max-w-full">
-                                                    <Field
-                                                        type="password"
-                                                        name="password"
-                                                        placeholder="Şifrə"
-                                                        className="w-full bg-transparent outline-none"
-                                                    />
-                                                    <img
-                                                        loading="lazy"
-                                                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/cc75299a447e1f2b81cfaeb2821950c885d45d255e50ae73ad2684fcd9aa2110?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
-                                                        className="object-contain shrink-0 w-6 aspect-square"
-                                                    />
-                                                </div>
-                                                <ErrorMessage
-                                                    name="password"
-                                                    component="div"
-                                                    className="text-red-500 text-sm mt-1"
-                                                />
-                                                <div className="mt-3 text-sm text-right text-white max-md:max-w-full">
-                                                    Şifrəmi unutdum
-                                                </div>
-                                            </div> */}
                     </div>
                     <button
                       type="submit"

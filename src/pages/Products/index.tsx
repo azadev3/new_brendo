@@ -92,7 +92,10 @@ const DropdownItem = memo(({ data }: { data: Category }) => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
   const location = useLocation();
 
-  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const queryParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
   const subCategory = queryParams.get('subCategory');
   const category = queryParams.get('category');
   const third_category_id = queryParams.get('third_category_id');
@@ -198,7 +201,9 @@ const DropdownItem = memo(({ data }: { data: Category }) => {
 
   const currentPath = useMemo(() => {
     const baseRoute = `/${lang}/${ROUTES.product[lang as keyof typeof ROUTES.product]}`;
-    return category && +category === data.id ? baseRoute : `${baseRoute}?category=${data.id}`;
+    return category && +category === data.id
+      ? baseRoute
+      : `${baseRoute}?category=${data.id}`;
   }, [lang, category, data.id]);
 
   return (
@@ -237,9 +242,11 @@ const DropdownItemFilter = memo(
     options: number[];
   }) => {
     const { lang = 'ru' } = useParams<{ lang: string }>();
-    const { data: tarnslation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-      lang,
-    ]);
+    const { data: tarnslation } = GETRequest<TranslationsKeys>(
+      `/translates`,
+      'translates',
+      [lang],
+    );
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -290,7 +297,7 @@ const DropdownItemFilter = memo(
             <div className="mb-4">
               <input
                 type="text"
-                placeholder={`${data.title} ${tarnslation?.bro_tit || 'axtar'}`}
+                placeholder={`${data.title} ${tarnslation?.axtar ?? ""}`}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 text-sm border border-[#E5E5E5] rounded-md outline-none focus:border-blue-500 transition-colors"
@@ -326,7 +333,9 @@ const DropdownItemFilter = memo(
                         </svg>
                       )}
                     </div>
-                    <p className="text-[10px] mt-2 text-black text-opacity-60">{item.title}</p>
+                    <p className="text-[10px] mt-2 text-black text-opacity-60">
+                      {item.title}
+                    </p>
                   </div>
                 ) : (
                   <div
@@ -369,9 +378,11 @@ const DropdownItemBrand = memo(
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const { lang = 'ru' } = useParams<{ lang: string }>();
-    const { data: tarnslation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-      lang,
-    ]);
+    const { data: tarnslation } = GETRequest<TranslationsKeys>(
+      `/translates`,
+      'translates',
+      [lang],
+    );
 
     const toggleDropdown = useCallback(() => setIsOpen(prev => !prev), []);
 
@@ -390,7 +401,9 @@ const DropdownItemBrand = memo(
 
     const filteredBrands = useMemo(
       () =>
-        brands.filter(brand => brand.title.toLowerCase().includes(searchTerm.toLowerCase())),
+        brands.filter(brand =>
+          brand.title.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
       [brands, searchTerm],
     );
 
@@ -483,7 +496,10 @@ export default function Products({
   const { lang = 'ru' } = useParams<{ lang: string }>();
 
   // URL params
-  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const queryParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
   const subCategory = queryParams.get('subCategory');
   const category = queryParams.get('category');
   const brand_id = queryParams.get('brand_id');
@@ -497,7 +513,9 @@ export default function Products({
   // API query string
   const brandQuery = useMemo(
     () =>
-      selectedBrandIds.length ? selectedBrandIds.map(id => `brand_id[]=${id}`).join('&') : '',
+      selectedBrandIds.length
+        ? selectedBrandIds.map(id => `brand_id[]=${id}`).join('&')
+        : '',
     [selectedBrandIds],
   );
 
@@ -532,19 +550,18 @@ export default function Products({
   ]);
 
   // API requests
-  const { data: brands, isLoading: brandsLoading } = GETRequest<Brand[]>(`/brands`, 'brands', [
-    lang,
-  ]);
+  const { data: brands, isLoading: brandsLoading } = GETRequest<Brand[]>(
+    `/brands`,
+    'brands',
+    [lang],
+  );
   const { data: categories, isLoading: categoriesLoading } = GETRequest<Category[]>(
     `/categories`,
     'categories',
     [lang],
   );
-  const { data: tarnslation, isLoading: tarnslationLoading } = GETRequest<TranslationsKeys>(
-    `/translates`,
-    'translates',
-    [lang],
-  );
+  const { data: tarnslation, isLoading: tarnslationLoading } =
+    GETRequest<TranslationsKeys>(`/translates`, 'translates', [lang]);
   const { data: filters, isLoading: filtersLoading } = GETRequest<Filter[]>(
     `/filters`,
     'filters',
@@ -704,7 +721,8 @@ export default function Products({
   const token = parsedUser?.token || '';
 
   // get filters by categories
-  const [newFiltersData, setNewFiltersData] = React.useState<NewFiltersInterface | null>(null);
+  const [newFiltersData, setNewFiltersData] =
+    React.useState<NewFiltersInterface | null>(null);
   const [newFiltersLoading, setNewFiltersLoading] = React.useState<boolean>(false);
   const fetchNewFilters = async () => {
     setNewFiltersLoading(true);
@@ -757,11 +775,11 @@ export default function Products({
               backgroundRepeat: 'no-repeat',
             }}
           >
-            <div className="absolute inset-0 bg-black opacity-50"></div>
+            {/* <div className="absolute inset-0 bg-black opacity-50"></div> */}
 
             <div className="flex relative gap-2 items-center self-start text-base">
               <Link
-              reloadDocument
+                reloadDocument
                 to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}
                 className="flex gap-2 items-center"
               >
@@ -797,6 +815,76 @@ export default function Products({
                 <div className="text-xl font-semibold text-black">
                   {tarnslation?.Filter || 'Фильтр'}
                 </div>
+
+                {/* mobile */}
+                <div className="md:hidden">
+                  <Suspense
+                    fallback={
+                      <div className="h-12 bg-gray-200 rounded-full animate-pulse" />
+                    }
+                  >
+                    <MobileFilter
+                      translation={tarnslation}
+                      selectedItems={{
+                        category: category,
+                        subCategory: null,
+                        thirdCategory: null,
+                        options: options,
+                      }}
+                      onClose={closeFilter}
+                    >
+                      <div className="p-4">
+                        <p className="text-sm text-gray-600 mb-4">
+                          {tarnslation?.Filter_description || 'Məhsulları filtrlə'}
+                        </p>
+
+                        {/* Mobile filter content */}
+                        <div className="space-y-4">
+                          {newFiltersLoading ? (
+                            <FilterSkeleton />
+                          ) : (
+                            newFiltersData?.subCategories?.map(categoryItem => (
+                              <DropdownItemC
+                                key={categoryItem.id}
+                                data={categoryItem}
+                              />
+                            ))
+                          )}
+
+                          {brandsLoading ? (
+                            <div className="h-12 bg-gray-200 rounded-full animate-pulse" />
+                          ) : (
+                            <DropdownItemBrand
+                              brands={brands || []}
+                              selectedBrandIds={selectedBrandIds}
+                              onSelectBrand={handleBrandSelect}
+                            />
+                          )}
+
+                          {newFiltersData?.filters?.map(item => (
+                            <DropdownItemFilter
+                              key={item.id}
+                              options={options}
+                              setoptions={setoptions}
+                              data={item as any}
+                            />
+                          ))}
+
+                          {brandsLoading ? (
+                            <div className="h-12 bg-gray-200 rounded-full animate-pulse" />
+                          ) : (
+                            <DropdownItemBrand
+                              brands={brands || []}
+                              selectedBrandIds={selectedBrandIds}
+                              onSelectBrand={handleBrandSelect}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </MobileFilter>
+                  </Suspense>
+                </div>
+
                 {/* Desktop Filter - always visible on desktop */}
                 <div className="hidden md:flex overflow-hidden flex-col px-5 py-6 mt-5 w-full rounded-3xl border border-solid border-black border-opacity-10">
                   <div className="flex flex-col mt-2 text-black whitespace-nowrap gap-4">
@@ -812,6 +900,16 @@ export default function Products({
                       ))
                     )}
 
+                    {brandsLoading ? (
+                      <div className="h-12 bg-gray-200 rounded-full animate-pulse" />
+                    ) : (
+                      <DropdownItemBrand
+                        brands={brands || []}
+                        selectedBrandIds={selectedBrandIds}
+                        onSelectBrand={handleBrandSelect}
+                      />
+                    )}
+
                     {newFiltersData?.filters?.map(item => (
                       <DropdownItemFilter
                         key={item.id}
@@ -823,7 +921,9 @@ export default function Products({
 
                     {/* Price Filter */}
                     <div className="flex flex-col mt-4 w-full text-sm whitespace-nowrap">
-                      <label className="text-black">{tarnslation?.Qiymət || 'Цена'}</label>
+                      <label className="text-black">
+                        {tarnslation?.Qiymət || 'Цена'}
+                      </label>
                       <div className="flex overflow-hidden gap-2 p-1.5 mt-2 w-full bg-neutral-100 rounded-[100px] text-black text-opacity-60">
                         <input
                           onChange={e => setminPrice(+e.target.value)}
@@ -866,7 +966,9 @@ export default function Products({
                 {/* Mobile Filter - only show on mobile */}
                 <div className="md:hidden">
                   <Suspense
-                    fallback={<div className="h-12 bg-gray-200 rounded-full animate-pulse" />}
+                    fallback={
+                      <div className="h-12 bg-gray-200 rounded-full animate-pulse" />
+                    }
                   >
                     <MobileFilter
                       translation={tarnslation}
@@ -959,7 +1061,9 @@ export default function Products({
 
                     {/* Price Filter */}
                     <div className="flex flex-col mt-4 w-full text-sm whitespace-nowrap">
-                      <label className="text-black">{tarnslation?.Qiymət || 'Цена'}</label>
+                      <label className="text-black">
+                        {tarnslation?.Qiymət || 'Цена'}
+                      </label>
                       <div className="flex overflow-hidden gap-2 p-1.5 mt-2 w-full bg-neutral-100 rounded-[100px] text-black text-opacity-60">
                         <input
                           onChange={e => setminPrice(+e.target.value)}
@@ -1015,15 +1119,21 @@ export default function Products({
                       <option value="">{tarnslation?.Sırala}</option>
                       <option value="A-Z">A-Z</option>
                       <option value="Z-A">Z-A</option>
-                      <option value="expensive-cheap">{tarnslation?.Expensive_Cheap}</option>
-                      <option value="cheap-expensive">{tarnslation?.Cheap_Expensive}</option>
+                      <option value="expensive-cheap">
+                        {tarnslation?.Expensive_Cheap}
+                      </option>
+                      <option value="cheap-expensive">
+                        {tarnslation?.Cheap_Expensive}
+                      </option>
                       <option value="old-new">{tarnslation?.Old_New}</option>
                       <option value="new-old">{tarnslation?.New_Old}</option>
                     </select>
                   </div>
                 </div>
                 <div className="">
-                  <span className="mr-2">{tarnslation?.Количество_key || 'Məhsul sayı'}</span>{' '}
+                  <span className="mr-2">
+                    {tarnslation?.Количество_key || 'Məhsul sayı'}
+                  </span>{' '}
                   : {products?.meta?.total || 0}
                 </div>
               </div>
@@ -1041,7 +1151,7 @@ export default function Products({
                       >
                         <div className="self-stretch my-auto">{item.title}</div>
                         <Link
-                        reloadDocument
+                          reloadDocument
                           to={`/${lang}/${
                             ROUTES.product[lang as keyof typeof ROUTES.product]
                           }`}

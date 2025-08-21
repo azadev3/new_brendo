@@ -1141,7 +1141,7 @@ export default function Header() {
             <input
               ref={inputRef}
               type="text"
-              placeholder="Search"
+              placeholder={translation?.axtar ?? ''}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const value = e.target.value;
                 setSearchValue(value);

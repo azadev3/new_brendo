@@ -24,9 +24,11 @@ export default function RatingModal({
   const { lang } = useParams<{
     lang: string;
   }>();
-  const { data: tarnslation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: tarnslation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[51]">
@@ -101,7 +103,7 @@ export default function RatingModal({
                 <Field
                   as="textarea"
                   name="review"
-                  placeholder="review"
+                  placeholder={tarnslation?.rey ?? ''}
                   className="w-full p-3 border rounded-lg resize-none h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   maxLength={100}
                 />

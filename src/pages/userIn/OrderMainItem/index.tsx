@@ -227,7 +227,7 @@ const OrderMainItem = ({ order, cancellationReasons }: { order: Order | any, can
             </div>
             <div>
               <div className="text-gray-500">{translation?.priced}:</div>
-              <div className="font-semibold">{order.total_price} AZN</div>
+              <div className="font-semibold">{order.total_price} RUB</div>
             </div>
             <div>
               <div className="text-gray-500">{translation?.given_key}:</div>

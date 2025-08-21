@@ -3,7 +3,7 @@ import { baseUrlInf } from '../../../InfluencerBaseURL';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 
-export const removeCollection = async (id: number) => {
+export const removeCollection = async (id: number, msg: string) => {
   const { lang = 'ru' } = useParams();
   const userStr = localStorage.getItem('user-info');
   const user = userStr ? JSON.parse(userStr) : '';
@@ -17,7 +17,7 @@ export const removeCollection = async (id: number) => {
     });
 
     if (res.data) {
-      toast.success('Коллекция удалена!');
+      toast.success(msg ?? "");
       if (location.pathname === `/${lang}/influencer/kolleksiyalar`) {
         setTimeout(() => {
           window.location.reload();

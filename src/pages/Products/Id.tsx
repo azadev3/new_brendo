@@ -379,7 +379,7 @@ export default function ProductId() {
       setGuestCart(currentCart);
 
       setisinbusked(true);
-      toast.success(tarnslation?.handle_added || 'Məhsul səbətə əlavə olundu');
+      toast.success(tarnslation?.mehsul_added ?? '');
       return;
     }
 
@@ -429,10 +429,10 @@ export default function ProductId() {
         },
       );
 
-      toast.success(tarnslation?.Notification_Success || 'Xəbər veriləcək!');
+      toast.success(tarnslation?.Notification_is_success ?? '');
       setIsModalOpen(false);
     } catch (error) {
-      toast.error(tarnslation?.Notification_Error || 'Xəta baş verdi!');
+      toast.error(tarnslation?.Notification_is_Error ?? '');
     }
   };
 

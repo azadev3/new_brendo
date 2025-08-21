@@ -350,14 +350,14 @@ const OtherLinks = React.memo(
 // Social links component
 const SocialLinks = React.memo(({ socials }: { socials: SocialMediaLink[] }) => (
   <div className="flex gap-2 items-center self-end h-[40px] w-full max-md:mt-10">
-    {socials?.slice(0, 5).map((item: SocialMediaLink) => (
+    {socials?.map((item: SocialMediaLink) => (
       <Link
         reloadDocument
         key={item.id}
         to={item.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-[40px] h-[40px] flex items-center justify-center hover:scale-110 transition-transform"
+        className="w-[40px] h-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center overflow-hidden hover:scale-110 transition-transform"
       >
         <img
           loading="lazy"
@@ -489,7 +489,7 @@ export function Footer() {
                           onChange={e => setEmail(e.target.value)}
                           value={email}
                           type="email"
-                          placeholder="Email"
+                          placeholder={translations?.Email ?? ''}
                           disabled={isSubscribing}
                           className="bg-transparent outline-none text-white placeholder-white placeholder-opacity-60 w-full disabled:opacity-50"
                           required
@@ -518,7 +518,7 @@ export function Footer() {
 
             <div className="shrink-0 mt-7 max-sm:hidden h-px border border-solid border-white border-opacity-10 max-md:max-w-full" />
             <div className="self-start max-sm:hidden mt-7 ml-10 text-sm text-white max-md:ml-2.5">
-              ©2024 | Brendoo
+              {translations?.footer_text ?? '2025 | Brendoo'}
             </div>
           </div>
         </div>
@@ -559,7 +559,7 @@ export function Footer() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Email"
+                  placeholder={translations?.Email ?? ''}
                   disabled={isSubmitting}
                   className="w-full px-4 py-2 bg-white bg-opacity-10 text-white rounded-[20px] focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
                 />
@@ -595,7 +595,7 @@ export function Footer() {
         {/* Mobile copyright */}
         <div className="shrink-0 max-sm:flex hidden max-sm:mt-0 mt-7 h-px border border-solid border-white border-opacity-10 max-md:max-w-full" />
         <div className="self-start max-sm:mt-3 max-sm:mb-6 max-sm:flex hidden mt-7 ml-10 text-sm text-white max-md:ml-2.5 order-3">
-          ©2024 | Brendoo
+          {translations?.footer_text ?? '2025 | Brendoo'}
         </div>
       </div>
     </div>

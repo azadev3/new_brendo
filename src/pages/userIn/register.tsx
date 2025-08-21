@@ -1,45 +1,51 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import toast from "react-hot-toast";
-import GETRequest from "../../setting/Request";
-import { TranslationsKeys } from "../../setting/Types";
-import ROUTES from "../../setting/routes";
-import { baseUrlInf } from "../../InfluencerBaseURL";
+import React, { ChangeEvent, FormEvent, useState } from 'react';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import GETRequest from '../../setting/Request';
+import { TranslationsKeys } from '../../setting/Types';
+import ROUTES from '../../setting/routes';
+import { baseUrlInf } from '../../InfluencerBaseURL';
 // Validation Schema using Yup
-const validationSchema = Yup.object({
-  name: Yup.string().required("Please enter your name"),
-  phone: Yup.string()
-    .required("Phone number is required")
-    .matches(
-      /^[0-9]{10}$/,
-      "Phone number must be 10 digits long and start with 9 (e.g., 911123456)"
-    ),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Please enter your email"),
-  password: Yup.string()
-    .min(8, "Password must be at least 8 characters long")
-    .required("Please enter your password"),
-  acceptTerms: Yup.boolean()
-    .oneOf([true], "You must accept the terms and conditions")
-    .required("You must accept the terms and conditions"),
-  gender: Yup.string()
-    .oneOf(["man", "woman"], "Gender must be either man or woman")
-    .required("Gender is required"),
-  birthday: Yup.date().required("Birthday is required"),
-});
 
 const Register = () => {
-  const [userType, setUserType] = useState<"user" | "influencer">("user");
+  const { lang = 'ru' } = useParams<{ lang: string }>();
+
+  const { data: tarnslation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required('Please enter your name'),
+    phone: Yup.string()
+      .required(tarnslation?.is_r_5 ?? '')
+      .matches(/^[0-9]{10}$/, tarnslation?.is_r_6 ?? ''),
+    email: Yup.string()
+      .email(tarnslation?.is_r_12 ?? '')
+      .required(tarnslation?.Pls_r ?? ''),
+    password: Yup.string()
+      .min(8, tarnslation?.long ?? '')
+      .required(tarnslation?.ps_w ?? ''),
+    acceptTerms: Yup.boolean()
+      .oneOf([true], tarnslation?.must_be_c ?? '')
+      .required(tarnslation?.must_be_c ?? ''),
+    gender: Yup.string()
+      .oneOf(['man', 'woman'], tarnslation?.gn ?? '')
+      .required(tarnslation?.gender_is_req ?? ' '),
+    birthday: Yup.date().required(tarnslation?.birt ?? ''),
+  });
+
+  const [userType, setUserType] = useState<'user' | 'influencer'>('user');
 
   const [showPassword, setShowPassword] = useState(false);
   const [variant] = useState<1 | 2>(1);
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
+    setShowPassword(prev => !prev);
   };
 
   const navigate = useNavigate();
@@ -53,17 +59,14 @@ const Register = () => {
     birthday: string;
   }) {
     try {
-      const response = await axios.post(
-        "https://admin.brendoo.com/api/register",
-        {
-          name: values.name,
-          phone: `${values.phone}`,
-          email: values.email,
-          password: values.password,
-          gender: values.gender === "" ? "man" : values.gender,
-          birthday: values.birthday,
-        }
-      );
+      const response = await axios.post('https://admin.brendoo.com/api/register', {
+        name: values.name,
+        phone: `${values.phone}`,
+        email: values.email,
+        password: values.password,
+        gender: values.gender === '' ? 'man' : values.gender,
+        birthday: values.birthday,
+      });
 
       if (response.status === 200 || response.status === 201) {
         navigate(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
@@ -75,24 +78,16 @@ const Register = () => {
             toast.error(item);
           });
         } else {
-          toast.error("");
+          toast.error('');
         }
       }
     }
   }
 
-  const { lang = "ru" } = useParams<{ lang: string }>();
-
-  const { data: tarnslation } = GETRequest<TranslationsKeys>(
-    `/translates`,
-    "translates",
-    [lang]
-  );
-
   const { data: registerImage } = GETRequest<{ image: string }>(
     `/registerImage`,
-    "registerImage",
-    [lang]
+    'registerImage',
+    [lang],
   );
 
   // const [otpValues, setOtpValues] = React.useState(Array(6).fill(""));
@@ -167,11 +162,11 @@ const Register = () => {
   //   );
   // };
 
-  const [name, setName] = React.useState<string>("");
-  const [email, setEmail] = React.useState<string>("");
-  const [telephone, setTelephone] = React.useState<string>("");
-  const [socialProfile, setSocialProfile] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
+  const [name, setName] = React.useState<string>('');
+  const [email, setEmail] = React.useState<string>('');
+  const [telephone, setTelephone] = React.useState<string>('');
+  const [socialProfile, setSocialProfile] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
   const handleSubmitInfluencer = async () => {
     try {
       const data = {
@@ -185,24 +180,23 @@ const Register = () => {
       const res = await axios.post(`${baseUrlInf}/register`, data);
 
       if (res?.status === 200 || res?.status === 201) {
-        toast.success("Uğurla qeydiyyatdan keçdiniz!");
+        toast.success('Uğurla qeydiyyatdan keçdiniz!');
         // OTP üçün tokeni saxlamaq YOXDUR artıq:
         // localStorage.setItem('efq', res.data?.data?.email_verification_token);
 
         const loginPath =
-          ROUTES.login?.[lang as keyof typeof ROUTES.login] ??
-          ROUTES.login["ru"];
+          ROUTES.login?.[lang as keyof typeof ROUTES.login] ?? ROUTES.login['ru'];
         navigate(`/${lang}/${loginPath}`);
       } else {
-        toast.error("Qeydiyyat tamamlanmadı. Yenidən cəhd edin.");
+        toast.error('Qeydiyyat tamamlanmadı. Yenidən cəhd edin.');
       }
     } catch (error: any) {
       // İstəyə görə backend error mesajnı göstər
       const msg =
         error?.response?.data?.message ||
         (Array.isArray(error?.response?.data?.error) &&
-          error.response.data.error.join(", ")) ||
-        "Xəta baş verdi. Yenidən cəhd edin.";
+          error.response.data.error.join(', ')) ||
+        'Xəta baş verdi. Yenidən cəhd edin.';
       toast.error(msg);
       console.error(error);
     }
@@ -213,7 +207,7 @@ const Register = () => {
       <div className="flex  relative flex-col w-full h-[93vh] max-md:max-w-full justify-center items-center px-[40px] max-sm:px-4">
         <img
           loading="lazy"
-          src={registerImage?.image || ""}
+          src={registerImage?.image || ''}
           className="object-cover absolute inset-0 size-full"
         />
         <div
@@ -241,52 +235,52 @@ const Register = () => {
 
               <div
                 className="flex gap-4 justify-start mb-6 text-white z-[60]"
-                style={{ marginTop: "48px" }}
+                style={{ marginTop: '48px' }}
               >
                 <label className="flex items-center gap-2">
                   <input
                     style={{
-                      minWidth: "21px",
-                      width: "21px",
-                      minHeight: "21px",
-                      height: "21px",
+                      minWidth: '21px',
+                      width: '21px',
+                      minHeight: '21px',
+                      height: '21px',
                     }}
                     type="radio"
                     name="userType"
                     value="user"
-                    checked={userType === "user"}
-                    onChange={() => setUserType("user")}
+                    checked={userType === 'user'}
+                    onChange={() => setUserType('user')}
                   />
                   {tarnslation?.istifadeci_key}
                 </label>
                 <label className="flex items-center gap-2">
                   <input
                     style={{
-                      minWidth: "21px",
-                      width: "21px",
-                      minHeight: "21px",
-                      height: "21px",
+                      minWidth: '21px',
+                      width: '21px',
+                      minHeight: '21px',
+                      height: '21px',
                     }}
                     type="radio"
                     name="userType"
                     value="influencer"
-                    checked={userType === "influencer"}
-                    onChange={() => setUserType("influencer")}
+                    checked={userType === 'influencer'}
+                    onChange={() => setUserType('influencer')}
                   />
-                  {tarnslation?.influencer_key ?? ""}
+                  {tarnslation?.influencer_key ?? ''}
                 </label>
               </div>
 
-              {userType === "user" ? (
+              {userType === 'user' ? (
                 <>
                   <Formik
                     initialValues={{
-                      name: "",
-                      phone: "",
-                      email: "",
-                      password: "",
+                      name: '',
+                      phone: '',
+                      email: '',
+                      password: '',
                       acceptTerms: false, // Ensure boolean default value
-                      gender: "",
+                      gender: '',
                     }}
                     validationSchema={validationSchema}
                     onSubmit={async (values: any) => {
@@ -347,7 +341,7 @@ const Register = () => {
                           <Field
                             name="email"
                             className="overflow-hidden px-5 py-5 w-full h-[56px] text-base whitespace-nowrap bg-white border border-solid border-black border-opacity-10 rounded-[100px] text-black text-opacity-60 mt-3"
-                            placeholder="Email"
+                            placeholder={tarnslation?.Email ?? ''}
                           />
                           <ErrorMessage
                             name="email"
@@ -357,7 +351,7 @@ const Register = () => {
 
                           <div className="flex overflow-hidden gap-5 justify-between px-5  w-full h-[56px] text-base whitespace-nowrap bg-white border border-solid border-black border-opacity-10 rounded-[100px] text-black text-opacity-60 mt-3">
                             <Field
-                              type={showPassword ? "text" : "password"}
+                              type={showPassword ? 'text' : 'password'}
                               name="password"
                               placeholder={tarnslation?.password}
                               className="outline-none bg-transparent w-full h-[56px]"
@@ -367,8 +361,8 @@ const Register = () => {
                               onClick={togglePasswordVisibility}
                               src={
                                 showPassword
-                                  ? "https://cdn.builder.io/api/v1/image/assets/TEMP/cc75299a447e1f2b81cfaeb2821950c885d45d255e50ae73ad2684fcd9aa2110?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
-                                  : "/svg/closedaye.svg"
+                                  ? 'https://cdn.builder.io/api/v1/image/assets/TEMP/cc75299a447e1f2b81cfaeb2821950c885d45d255e50ae73ad2684fcd9aa2110?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099'
+                                  : '/svg/closedaye.svg'
                               }
                               className="object-contain shrink-0 w-6 aspect-square cursor-pointer"
                               alt="Toggle Password Visibility"
@@ -385,14 +379,12 @@ const Register = () => {
                             name="gender"
                             className="overflow-hidden px-5 py-2 w-full h-[56px] text-base whitespace-nowrap bg-white border border-solid border-black border-opacity-10 rounded-[100px] text-black text-opacity-60 mt-3"
                           >
-                            <option defaultChecked>
-                              {tarnslation?.gender}
-                            </option>
+                            <option defaultChecked>{tarnslation?.gender}</option>
                             <option value="man">
-                              {lang === "en" ? "Male" : "мужчина"}
+                              {lang === 'en' ? 'Male' : 'мужчина'}
                             </option>
                             <option value="woman">
-                              {lang === "en" ? "Female" : "женщина"}
+                              {lang === 'en' ? 'Female' : 'женщина'}
                             </option>
                           </Field>
                           <ErrorMessage
@@ -421,7 +413,7 @@ const Register = () => {
                             name="birthday"
                             type="date"
                             className="px-5 py-5 w-full h-[56px] text-base whitespace-nowrap bg-white border border-solid border-black border-opacity-10 rounded-[100px] text-black text-opacity-60 mt-3"
-                            placeholder="Birthday"
+                            placeholder={tarnslation?.Birthday ?? ''}
                           />
                           <ErrorMessage
                             name="birthday"
@@ -430,10 +422,7 @@ const Register = () => {
                           />
 
                           <div className="gap-2.5 self-stretch px-10 py-4 lg:mt-7 mt-4 w-full text-base font-medium text-black border border-solid bg-slate-300 border-slate-300 rounded-[100px] max-md:px-5 max-md:max-w-full">
-                            <button
-                              type="submit"
-                              className="w-full cursor-pointer"
-                            >
+                            <button type="submit" className="w-full cursor-pointer">
                               {tarnslation?.register}
                             </button>
                           </div>
@@ -443,10 +432,10 @@ const Register = () => {
                   </Formik>
                 </>
               ) : (
-                userType === "influencer" && (
+                userType === 'influencer' && (
                   <>
                     <form
-                      style={{ marginTop: "40px" }}
+                      style={{ marginTop: '40px' }}
                       onSubmit={(e: FormEvent<HTMLFormElement>) => {
                         e.preventDefault();
                         handleSubmitInfluencer();
@@ -462,7 +451,7 @@ const Register = () => {
                         type="text"
                         name="name"
                         required
-                        placeholder="Name"
+                        placeholder={tarnslation?.name_pl ?? ''}
                       />
                       <input
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -472,7 +461,7 @@ const Register = () => {
                         type="email"
                         name="email"
                         required
-                        placeholder="Email"
+                        placeholder={tarnslation?.Email ?? ''}
                       />
                       <input
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -482,7 +471,7 @@ const Register = () => {
                         type="tel"
                         name="phone"
                         required
-                        placeholder="Telephone"
+                        placeholder={tarnslation?.phone_pl ?? ''}
                       />
                       <input
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -492,7 +481,7 @@ const Register = () => {
                         type="text"
                         name="social_profile"
                         required
-                        placeholder="Your social profile - for example: youtube.com/myprofile"
+                        placeholder={tarnslation?.sc_tr ?? ''}
                       />
                       <input
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -502,7 +491,7 @@ const Register = () => {
                         type="password"
                         name="password"
                         required
-                        placeholder="Password"
+                        placeholder={tarnslation?.password ?? ''}
                       />
                       <div className="gap-2.5 self-stretch px-10 py-4 lg:mt-7 mt-4 w-full text-base font-medium text-black border border-solid bg-slate-300 border-slate-300 rounded-[100px] max-md:px-5 max-md:max-w-full">
                         <button type="submit" className="w-full cursor-pointer">
@@ -518,9 +507,7 @@ const Register = () => {
             <div
               className="mt-4 cursor-pointer text-base font-semibold text-center text-white text-opacity-80 lg:mt-4  max-md:max-w-full"
               onClick={() => {
-                navigate(
-                  `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`
-                );
+                navigate(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
               }}
             >
               <span>{tarnslation?.Hesabınız_var}?</span> {tarnslation?.login}

@@ -9,6 +9,17 @@ import { TranslationsKeys } from '../../setting/Types';
 import ROUTES from '../../setting/routes';
 
 export default function ResetPasswordConfrim() {
+  const { lang, slug } = useParams<{
+    lang: string;
+    page: string;
+    slug: string;
+  }>();
+  const { data: tarnslation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   // const [showPassword, setShowPassword] = useState(false);
@@ -25,20 +36,13 @@ export default function ResetPasswordConfrim() {
   const validationSchema = Yup.object({
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
-      .required('Password is required'),
+      .required(tarnslation?.is_r_14 ?? ''),
     password2: Yup.string()
       .min(6, 'Password must be at least 6 characters')
-      .required('Password is required'),
+      .required(tarnslation?.is_r_14 ?? ''),
   });
-  const { lang, slug } = useParams<{
-    lang: string;
-    page: string;
-    slug: string;
-  }>();
-  const handleSubmit = async (values: {
-    password: string;
-    password2: string;
-  }) => {
+
+  const handleSubmit = async (values: { password: string; password2: string }) => {
     setLoading(true);
     setFormStatus(null); // Reset status message
     const Email = localStorage.getItem('EmailForReset');
@@ -49,23 +53,18 @@ export default function ResetPasswordConfrim() {
         new_password: values.password,
         new_password_confirmation: values.password2,
       })
-      .then((response) => {
+      .then(response => {
         localStorage.setItem('user-info', JSON.stringify(response));
         toast.success('Password sucsesfully reset ');
         //add token to local
         navigate(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
         toast.error('Error while logging in');
       });
   };
 
-  const { data: tarnslation } = GETRequest<TranslationsKeys>(
-    `/translates`,
-    'translates',
-    [lang]
-  );
   return (
     <div className="flex overflow-hidden flex-col bg-white">
       <div className="flex relative flex-col w-full h-[100vh] max-md:max-w-full justify-center items-center px-[40px] max-sm:px-4">
@@ -76,7 +75,8 @@ export default function ResetPasswordConfrim() {
         />
         <div
           onClick={() => navigate(-1)}
-          className="rounded-full bg-white lg:w-[56px] lg:h-[56px] w-[35px] h-[35px] bg-opacity-60 z-50 absolute top-5 left-5 cursor-pointer">
+          className="rounded-full bg-white lg:w-[56px] lg:h-[56px] w-[35px] h-[35px] bg-opacity-60 z-50 absolute top-5 left-5 cursor-pointer"
+        >
           <img
             loading="lazy"
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/d1d01662ce302f4f64e209cc8ecd0540b6f0e5fb3d4ccd79eead1b316a272d11?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
@@ -87,15 +87,14 @@ export default function ResetPasswordConfrim() {
         <div className="flex overflow-hidden z-[50] relative flex-col justify-center self-center p-[60px]  max-w-full rounded-3xl bg-white bg-opacity-20 w-[560px] max-md:px-5  max-sm:py-[28px]">
           <div className="flex flex-col max-md:max-w-full">
             <div className="flex flex-col items-center self-center text-center">
-              <div className="text-3xl font-bold text-white">
-                Password recovery
-              </div>
+              <div className="text-3xl font-bold text-white">Password recovery</div>
             </div>
             <div className="flex flex-col items-center lg:mt-10 mt-4 w-full max-md:max-w-full">
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={handleSubmit}>
+                onSubmit={handleSubmit}
+              >
                 {() => (
                   <Form className="flex flex-col self-stretch mt-7 w-full max-md:max-w-full">
                     <div className="flex flex-col w-full max-md:max-w-full">
@@ -103,7 +102,7 @@ export default function ResetPasswordConfrim() {
                         <Field
                           type="password"
                           name="password"
-                          placeholder="password"
+                          placeholder={tarnslation?.password ?? ''}
                           className="w-full bg-transparent outline-none"
                         />
                       </div>
@@ -147,7 +146,8 @@ export default function ResetPasswordConfrim() {
                       disabled={loading}
                       className={`gap-2.5 self-stretch px-10 py-4 mt-7 w-full text-base font-medium text-black border border-solid ${
                         loading ? 'bg-gray-400' : 'bg-slate-300'
-                      } border-slate-300 rounded-full max-md:px-5 max-md:max-w-full`}>
+                      } border-slate-300 rounded-full max-md:px-5 max-md:max-w-full`}
+                    >
                       {loading
                         ? tarnslation?.loading_main_key
                         : tarnslation?.passwordReset}
@@ -160,7 +160,8 @@ export default function ResetPasswordConfrim() {
                 <div
                   className={`mt-4 text-sm text-center ${
                     formStatus.success ? 'text-green-500' : 'text-red-500'
-                  }`}>
+                  }`}
+                >
                   {formStatus.message}
                 </div>
               )}

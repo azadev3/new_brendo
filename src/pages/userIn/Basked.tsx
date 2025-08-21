@@ -141,8 +141,15 @@ export default function Basked() {
   };
 
   const UpdateBaskedmutation = useMutation({
-    mutationFn: ({ id, price, quantity }: { id: number; price: string; quantity: number }) =>
-      UpdateBasked(id, price, quantity),
+    mutationFn: ({
+      id,
+      price,
+      quantity,
+    }: {
+      id: number;
+      price: string;
+      quantity: number;
+    }) => UpdateBasked(id, price, quantity),
     onSuccess: () => {
       toast.success(tarnslation?.mehsul_ugurla_yenilendi ?? '');
       queryClient.invalidateQueries({ queryKey: ['basket_items'] });
@@ -164,16 +171,13 @@ export default function Basked() {
       fetchBasketItems();
     },
     onError: error => {
-      toast.error('Xəta baş verdi');
+      toast.error(tarnslation?.xeta_bas_verdi ?? '');
       console.error(error);
     },
   });
 
-  const { data: tarnslation, isLoading: translateLoading } = GETRequest<TranslationsKeys>(
-    `/translates`,
-    'translates',
-    [lang],
-  );
+  const { data: tarnslation, isLoading: translateLoading } =
+    GETRequest<TranslationsKeys>(`/translates`, 'translates', [lang]);
 
   if (translateLoading || baskedLoading) {
     return <Loading />;
@@ -185,7 +189,10 @@ export default function Basked() {
       <main className="lg:mt-[0px] mt-0">
         <div className="px-[40px] pt-[40px] max-sm:px-4 mb-[28px]">
           <div className="flex items-center gap-2">
-            <Link reloadDocument to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}>
+            <Link
+              reloadDocument
+              to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}
+            >
               <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
                 {tarnslation?.home}{' '}
               </h6>
@@ -268,9 +275,11 @@ export default function Basked() {
                                   final_price = 0;
                                 cart.basket_items.forEach(basketItem => {
                                   const original = +basketItem.product.price;
-                                  const discounted = +basketItem.product.discounted_price;
+                                  const discounted =
+                                    +basketItem.product.discounted_price;
                                   total_price += original * basketItem.quantity;
-                                  discount += (original - discounted) * basketItem.quantity;
+                                  discount +=
+                                    (original - discounted) * basketItem.quantity;
                                   final_price += discounted * basketItem.quantity;
                                 });
 
@@ -279,7 +288,9 @@ export default function Basked() {
                                 cart.final_price = final_price;
 
                                 setGuestCart(cart);
-                                toast.success(tarnslation?.mehsul_ugurla_yenilendi ?? '');
+                                toast.success(
+                                  tarnslation?.mehsul_ugurla_yenilendi ?? '',
+                                );
                                 setBasketItemsData(cart);
                               }
                             }}
@@ -325,9 +336,11 @@ export default function Basked() {
                                   final_price = 0;
                                 cart.basket_items.forEach(basketItem => {
                                   const original = +basketItem.product.price;
-                                  const discounted = +basketItem.product.discounted_price;
+                                  const discounted =
+                                    +basketItem.product.discounted_price;
                                   total_price += original * basketItem.quantity;
-                                  discount += (original - discounted) * basketItem.quantity;
+                                  discount +=
+                                    (original - discounted) * basketItem.quantity;
                                   final_price += discounted * basketItem.quantity;
                                 });
 
@@ -336,7 +349,9 @@ export default function Basked() {
                                 cart.final_price = final_price;
 
                                 setGuestCart(cart);
-                                toast.success(tarnslation?.mehsul_ugurla_yenilendi ?? '');
+                                toast.success(
+                                  tarnslation?.mehsul_ugurla_yenilendi ?? '',
+                                );
                                 setBasketItemsData(cart);
                               }
                             }}
@@ -375,7 +390,8 @@ export default function Basked() {
                                 const original = +basketItem.product.price;
                                 const discounted = +basketItem.product.discounted_price;
                                 total_price += original * basketItem.quantity;
-                                discount += (original - discounted) * basketItem.quantity;
+                                discount +=
+                                  (original - discounted) * basketItem.quantity;
                                 final_price += discounted * basketItem.quantity;
                               });
 
@@ -422,7 +438,9 @@ export default function Basked() {
                       </div>
 
                       <div className="flex gap-10 justify-between items-center mt-4 w-full text-rose-500">
-                        <div className="self-stretch my-auto">{tarnslation?.Endirim}:</div>
+                        <div className="self-stretch my-auto">
+                          {tarnslation?.Endirim}:
+                        </div>
                         <div className="self-stretch my-auto text-right">
                           {basketItemsData?.discount}₽
                         </div>
@@ -458,9 +476,13 @@ export default function Basked() {
                       hasItems && hasItems.length > 0
                         ? userStr
                           ? `/${lang}/${
-                              ROUTES.ordersConfirm[lang as keyof typeof ROUTES.ordersConfirm]
+                              ROUTES.ordersConfirm[
+                                lang as keyof typeof ROUTES.ordersConfirm
+                              ]
                             }`
-                          : `/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`
+                          : `/${lang}/${
+                              ROUTES.login[lang as keyof typeof ROUTES.login]
+                            }`
                         : '#'
                     }
                   >
@@ -474,7 +496,9 @@ export default function Basked() {
       }
     `}
                     >
-                      <div className="gap-2 self-stretch">{tarnslation?.sifarish_et}:</div>
+                      <div className="gap-2 self-stretch">
+                        {tarnslation?.sifarish_et}:
+                      </div>
                     </button>
                   </Link>
                 </div>

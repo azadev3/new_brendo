@@ -238,15 +238,15 @@ const Collections: React.FC = () => {
                             product_id: p?.id,
                           },
                           getInnerCollection,
-                          translation?.mehsul_kolleksiyadan_silindi_t ?? ''
+                          translation?.mehsul_kolleksiyadan_silindi_t ?? '',
                         )
                       }
                     >
                       <img src="/Trash Bin Trash.svg" alt="Trash Bin Trash" />
                       <p>
                         {loadingInner[dataInner?.collection?.id]
-                          ? 'Please wait...'
-                          : 'Remove from collection'}
+                          ? translation?.is_loading ?? ''
+                          : translation?.removed_c_p ?? ''}
                       </p>
                     </button>
                   </div>
@@ -359,7 +359,10 @@ const Collections: React.FC = () => {
                                         } else if (item.id === 229379278278) {
                                           handleEditCollectionModal(data?.id); // Редактировать
                                         } else if (item.id === 39292928328928) {
-                                          removeCollection(data?.id); // Удалить
+                                          removeCollection(
+                                            data?.id,
+                                            translation?.kolleksiya_sil ?? '',
+                                          ); // Удалить
                                         }
                                       }}
                                     >

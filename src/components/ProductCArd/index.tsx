@@ -20,7 +20,12 @@ interface Props {
   bg: 'white' | 'grey';
 }
 
-export default function ProductCard({ isHome = false, data, issale = false, bg }: Props) {
+export default function ProductCard({
+  isHome = false,
+  data,
+  issale = false,
+  bg,
+}: Props) {
   const queryClient = useQueryClient();
   const [isliked, setisliked] = useState<boolean>(false);
   const [isMauseOn, setisMauseOn] = useState<boolean>(false);
@@ -30,7 +35,9 @@ export default function ProductCard({ isHome = false, data, issale = false, bg }
   const checkLikedProducts = () => {
     if (
       favorites?.some((item: any) =>
-        item && item?.product && item?.product?.id ? item?.product?.id === data?.id : '',
+        item && item?.product && item?.product?.id
+          ? item?.product?.id === data?.id
+          : '',
       )
     ) {
       setisliked(true);
@@ -43,9 +50,11 @@ export default function ProductCard({ isHome = false, data, issale = false, bg }
     lang: string;
   }>();
 
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
   const { data: favorites } = GETRequest<Favorite[]>(`/favorites`, 'favorites', [lang]);
 
   const { data: basked } = GETRequest<Basket>(`/basket_items`, 'basket_items', [
@@ -74,7 +83,9 @@ export default function ProductCard({ isHome = false, data, issale = false, bg }
 
       hasTrackedView.current = true;
 
-      const trackedProducts = JSON.parse(localStorage.getItem('tracked_products') || '[]');
+      const trackedProducts = JSON.parse(
+        localStorage.getItem('tracked_products') || '[]',
+      );
       if (!trackedProducts.includes(data?.id)) {
         trackedProducts.push(data?.id);
         localStorage.setItem('tracked_products', JSON.stringify(trackedProducts));
@@ -99,7 +110,9 @@ export default function ProductCard({ isHome = false, data, issale = false, bg }
         options:
           data?.filters && data?.filters.length > 0
             ? data?.filters.map(filter => {
-                const defoultOption = filter.options.find(item => +item.is_default === 1);
+                const defoultOption = filter.options.find(
+                  item => +item.is_default === 1,
+                );
                 return {
                   filter_id: filter.filter_id,
                   option_id: defoultOption?.option_id,
@@ -365,7 +378,7 @@ export default function ProductCard({ isHome = false, data, issale = false, bg }
             }}
           >
             <img src="/AddCircle2.svg" alt="AddCircle2" />
-            <p>Kolleksiyaya əlavə et</p>
+            <p>{translation?.kol_elave_et ?? ''}</p>
           </button>
         )}
       </div>

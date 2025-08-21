@@ -14,39 +14,35 @@ import * as Yup from 'yup';
 import ROUTES from '../setting/routes';
 
 export default function Contact() {
-  const validationSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .required('First name is required')
-      .min(2, 'First name must be at least 2 characters long'),
-    lastName: Yup.string()
-      .required('Last name is required')
-      .min(2, 'Last name must be at least 2 characters long'),
-    phone: Yup.string()
-      .required('Phone number is required')
-      .matches(
-        /^[0-9]{10}$/,
-        'Phone number must be 10 digits long and start with 9 (e.g., 911123456)',
-      ),
-    email: Yup.string().required('Email is required').email('Enter a valid email address'),
-    category: Yup.string().required('Category is required'),
-    note: Yup.string()
-      .required('Note is required')
-      .max(500, 'Note cannot exceed 500 characters'),
-  });
-
   const { lang = 'ru' } = useParams<{
     lang: string;
   }>();
-  const { data: tarnslation, isLoading: tarnslationLoading } = GETRequest<TranslationsKeys>(
-    `/translates`,
-    'translates',
-    [lang],
-  );
-  const { data: ContactInfo, isLoading: ContactInfoLoading } = GETRequest<ConmtactItem[]>(
-    `/contact_items`,
-    'contact_items',
-    [lang],
-  );
+
+  const { data: tarnslation, isLoading: tarnslationLoading } =
+    GETRequest<TranslationsKeys>(`/translates`, 'translates', [lang]);
+
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string()
+      .required(tarnslation?.is_r_1 ?? '')
+      .min(2, tarnslation?.is_r_2 ?? ''),
+    lastName: Yup.string()
+      .required(tarnslation?.is_r_3 ?? ' =')
+      .min(2, tarnslation?.is_r_4 ?? ''),
+    phone: Yup.string()
+      .required(tarnslation?.is_r_5 ?? '')
+      .matches(/^[0-9]{10}$/, tarnslation?.is_r_6 ?? ''),
+    email: Yup.string()
+      .required(tarnslation?.is_r_7 ?? '')
+      .email(tarnslation?.is_r_8 ?? ''),
+    category: Yup.string().required(tarnslation?.is_r_9 ?? ''),
+    note: Yup.string()
+      .required(tarnslation?.is_r_10 ?? '')
+      .max(500, tarnslation?.is_r_11 ?? ''),
+  });
+
+  const { data: ContactInfo, isLoading: ContactInfoLoading } = GETRequest<
+    ConmtactItem[]
+  >(`/contact_items`, 'contact_items', [lang]);
   const { data: socials } = GETRequest<SocialMediaLink[]>(`/socials`, 'socials', []);
   if (tarnslationLoading || ContactInfoLoading) {
     return <Loading />;
@@ -64,7 +60,10 @@ export default function Contact() {
           }}
         >
           <div className="flex items-center gap-2">
-            <Link reloadDocument to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}>
+            <Link
+              reloadDocument
+              to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`}
+            >
               <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
                 {tarnslation?.home}{' '}
               </h6>
@@ -100,7 +99,9 @@ export default function Contact() {
             <div className="flex flex-col lg:w-[41%] w-full max-md:ml-0 max-md:w-full">
               <div className="flex overflow-hidden flex-col grow items-start pt-10 pr-20 pb-52 pl-10 w-full rounded-3xl bg-[#8E98B8] max-md:px-5 max-md:pb-24 max-md:mt-5 max-md:max-w-full">
                 <div className="flex flex-col max-w-full text-white w-[391px]">
-                  <div className="text-xl font-semibold">{tarnslation?.Əlaqə_məlumatları}</div>
+                  <div className="text-xl font-semibold">
+                    {tarnslation?.Əlaqə_məlumatları}
+                  </div>
                   <div className="flex flex-col mt-7 w-full text-base">
                     {ContactInfo?.map(item => (
                       <div className="flex overflow-hidden flex-col justify-center items-start p-2 w-full bg-white bg-opacity-10 rounded-[100px] max-md:pr-5">
@@ -159,14 +160,17 @@ export default function Contact() {
                 validationSchema={validationSchema}
                 onSubmit={async (values, { setSubmitting }) => {
                   try {
-                    const res = await axios.post('https://admin.brendoo.com/api/contact', {
-                      name: values.firstName,
-                      surname: values.lastName,
-                      phone: values.phone,
-                      message: values.note,
-                      category: values.category,
-                      email: values.email,
-                    });
+                    const res = await axios.post(
+                      'https://admin.brendoo.com/api/contact',
+                      {
+                        name: values.firstName,
+                        surname: values.lastName,
+                        phone: values.phone,
+                        message: values.note,
+                        category: values.category,
+                        email: values.email,
+                      },
+                    );
                     if (res.status === 200 || res.status === 201) {
                       toast.success(tarnslation?.msg_send ?? '');
                     }
@@ -236,7 +240,7 @@ export default function Contact() {
                         <Field
                           type="email"
                           name="email"
-                          placeholder="Email"
+                          placeholder={tarnslation?.Email ?? ''}
                           className="w-full text-white px-5 py-5 bg-white bg-opacity-10 rounded-[100px] placeholder-white"
                         />
                         <ErrorMessage

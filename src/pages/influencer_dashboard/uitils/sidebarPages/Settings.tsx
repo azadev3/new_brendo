@@ -7,9 +7,11 @@ import { TranslationsKeys } from '../../../../setting/Types';
 
 const Settings: React.FC = () => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
-  const { data: translation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
+  const { data: translation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   // lang-ı hook-a ötürürük ki, header-larda istifadə etsin
   const { form, loading, handleChange, handleSubmit } = useUpdateProfile(lang);
@@ -50,7 +52,7 @@ const Settings: React.FC = () => {
               name="phone"
               value={form.phone}
               onChange={handleChange}
-              placeholder="Telefon"
+              placeholder={translation?.phone_pl ?? ''}
               autoComplete="tel"
             />
             <input
@@ -76,8 +78,8 @@ const Settings: React.FC = () => {
 
         <button type="submit" disabled={loading}>
           {loading
-            ? translation?.loading_main_key ?? 'Yüklənir...'
-            : translation?.yadda_saxla_key ?? 'Yadda saxla'}
+            ? translation?.loading_main_key ?? '.'
+            : translation?.yadda_saxla_key ?? ''}
         </button>
       </form>
     </div>

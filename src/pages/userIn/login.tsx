@@ -11,6 +11,12 @@ import { baseUrlInf } from '../../InfluencerBaseURL';
 
 export default function Login() {
   const [userType, setUserType] = useState<'user' | 'influencer'>('user');
+  const { lang = 'ru' } = useParams<{ lang: string }>();
+  const { data: tarnslation } = GETRequest<TranslationsKeys>(
+    `/translates`,
+    'translates',
+    [lang],
+  );
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -62,19 +68,20 @@ export default function Login() {
           throw new Error(`Hata: ${response.status}`);
         }
 
-        // başarılı olduysa guest_cart'ı silebilirsin
         localStorage.removeItem('guest_cart');
       }
     } catch (error) {
-      console.error('Guest cart senkronize edilirken hata:', error);
+      console.error('Error', error);
     }
   };
 
   const validationSchema = Yup.object({
-    email: Yup.string().email('Invalid email address').required('Email is required'),
+    email: Yup.string()
+      .email(tarnslation?.is_r_12 ?? '')
+      .required(tarnslation?.is_r_7 ?? ''),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .required('Password is required'),
+      .min(6, tarnslation?.is_r_13 ?? '')
+      .required(tarnslation?.is_r_14 ?? ''),
   });
 
   const handleSubmit = async (values: { email: string; password: string }) => {
@@ -124,18 +131,14 @@ export default function Login() {
         // window.location.href = `/${lang}/${ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]}`;
       }
     } catch (error: any) {
-      const errorMsg = error?.response?.data?.message || tarnslation?.error_to_log || '';
+      const errorMsg =
+        error?.response?.data?.message || tarnslation?.error_to_log || '';
       toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  const { lang = 'ru' } = useParams<{ lang: string }>();
-
-  const { data: tarnslation } = GETRequest<TranslationsKeys>(`/translates`, 'translates', [
-    lang,
-  ]);
   const { data: registerImage } = GETRequest<{ image: string }>(
     `/registerImage`,
     'registerImage',
@@ -167,7 +170,9 @@ export default function Login() {
         >
           <div className="flex flex-col max-md:max-w-full">
             <div className="flex flex-col items-center self-center text-center">
-              <div className="text-3xl font-bold text-white">{tarnslation?.Xoş_gəldiniz}</div>
+              <div className="text-3xl font-bold text-white">
+                {tarnslation?.Xoş_gəldiniz}
+              </div>
               <div className="mt-3 text-base text-white text-opacity-80">
                 {tarnslation?.logindesc}
               </div>
@@ -175,7 +180,9 @@ export default function Login() {
             <div className="flex flex-col items-center mt-4 w-full max-md:max-w-full">
               <div className="flex lg:gap-10 gap-5 items-center mt-7 text-xs text-center text-white w-full">
                 <div className="shrink-0 self-stretch my-auto h-px border border-solid border-white border-opacity-20 w-[35%]" />
-                <div className="self-stretch my-auto text-nowrap">{tarnslation?.or}</div>
+                <div className="self-stretch my-auto text-nowrap">
+                  {tarnslation?.or}
+                </div>
                 <div className="shrink-0 self-stretch my-auto h-px border border-solid border-white border-opacity-20 w-[35%]" />
               </div>
 
@@ -231,7 +238,7 @@ export default function Login() {
                         <Field
                           type="email"
                           name="email"
-                          placeholder="Email"
+                          placeholder={tarnslation?.Email ?? ''}
                           className="w-full bg-transparent outline-none"
                         />
                       </div>
@@ -268,7 +275,9 @@ export default function Login() {
                           onClick={() =>
                             navigate(
                               `/${lang}/${
-                                ROUTES.resetPasword[lang as keyof typeof ROUTES.resetPasword]
+                                ROUTES.resetPasword[
+                                  lang as keyof typeof ROUTES.resetPasword
+                                ]
                               }`,
                             )
                           }
@@ -304,7 +313,7 @@ export default function Login() {
             <div className=" lg:mt-[60px] mt-8 text-base font-semibold text-center text-white text-opacity-80  max-md:max-w-full">
               <span>{tarnslation?.Hesabın_yoxdur}? </span>
               <Link
-              reloadDocument
+                reloadDocument
                 to={`/${lang}/${ROUTES.register[lang as keyof typeof ROUTES.register]}`}
                 className="hover:underline"
               >

@@ -61,7 +61,7 @@ const SearchableSelect = ({ regionData, onChange, value }: { regionData: any, on
             <input
                 type="text"
                 className="w-full px-5 py-3 border border-black border-opacity-10 rounded-[200px]"
-                placeholder="Район выберите"
+                placeholder={translation?.rayon_viberite ?? ""}
                 value={searchTerm}
                 onChange={(e) => {
                     setSearchTerm(e.target.value);

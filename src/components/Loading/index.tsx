@@ -45,7 +45,7 @@ const Loading: React.FC = () => {
   const translations = useQuickTranslations(lang);
 
   const loadingText = useMemo(() => {
-    return translations['loading_main_key'] || 'Yüklənir...';
+    return translations?.loading_main_key_isload || '';
   }, [translations]);
 
   return (
@@ -74,7 +74,7 @@ export const LoadingNoFix: React.FC = () => {
 // Instant loading - hiç API beklemez
 export const InstantLoading: React.FC<{ lang?: string }> = ({ lang = 'ru' }) => {
   const translations = useQuickTranslations(lang);
-  const loadingText = translations['loading_main_key'] || 'Yüklənir...';
+  const loadingText = translations?.loading_main_key_isload;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-50 z-50">
@@ -94,10 +94,10 @@ export const MicroLoading: React.FC = () => (
 );
 
 // Button loading
-export const ButtonLoading: React.FC<{ text?: string }> = ({ text }) => {
+export const ButtonLoading: React.FC<{ text?: string }> = ({}) => {
   const { lang = 'ru' } = useParams<{ lang: string }>();
   const translations = useQuickTranslations(lang);
-  const loadingText = text || translations['loading_main_key'] || 'Yüklənir...';
+  const loadingText = translations?.loading_main_key_isload;
 
   return (
     <div className="flex items-center gap-2">
@@ -113,7 +113,9 @@ export const SkeletonBox: React.FC<{
   height?: string;
   className?: string;
 }> = ({ width = 'w-full', height = 'h-4', className = '' }) => (
-  <div className={`bg-gray-200 rounded animate-pulse ${width} ${height} ${className}`} />
+  <div
+    className={`bg-gray-200 rounded animate-pulse ${width} ${height} ${className}`}
+  />
 );
 
 // Preload popular languages in background

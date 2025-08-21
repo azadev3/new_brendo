@@ -19,7 +19,7 @@ interface FormValues {
 }
 
 const validationSchema = Yup.object({
-  address: Yup.string().required('Address is required'),
+  address: Yup.string().required(''),
   additionalInfo: Yup.string(),
 });
 
