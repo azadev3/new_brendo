@@ -9,6 +9,9 @@ import { CheckCircle2, Package } from 'lucide-react';
 import { IoClose } from 'react-icons/io5';
 import RatingModal from '../../components/rating-modal/rating-modal';
 import RestoreModal from './RestoreModal';
+import SearchableSelect from '../../components/Basked/SearchableSelect';
+import SearchableSelectCity from '../../components/Basked/SearchableSelectCity';
+import axios from 'axios';
 
 export interface NewOrd extends Order {
   statuses: [{ id: number; created_at: string; status: string }];
@@ -17,6 +20,71 @@ export interface NewOrd extends Order {
 const OrderItemsDetail = () => {
   const navigate = useNavigate();
   const [, setProductCommit] = useState<number>(0);
+  const userStr = localStorage.getItem('user-info');
+  const parsedUser = userStr ? JSON.parse(userStr) : null;
+  const token =
+    parsedUser?.token ||
+    parsedUser?.access_token ||
+    parsedUser?.api_token ||
+    parsedUser?.bearer ||
+    parsedUser?.user?.token ||
+    '';
+
+  // Bölge ve şehir dataları
+  const [regionData, setRegionData] = useState<
+    { id: number; regionId: number; regionName: string }[]
+  >([]);
+  const [cityData, setCityData] = useState<
+    { id: number; cityId: number; cityName: string }[]
+  >([]);
+
+  const [regionId, setRegionId] = useState<number | ''>('');
+  const [cityId, setCityId] = useState<number | ''>('');
+
+  // API'den bölgeleri çek
+  const getRegions = async () => {
+    try {
+      const res = await axios.get('https://admin.brendoo.com/api/regions', {
+        headers: { 'Accept-Language': lang, Authorization: `Bearer ${token}` },
+      });
+      if (res.data) setRegionData(res.data);
+    } catch (e) {
+      console.error('Regions fetch error:', e);
+    }
+  };
+
+  // Seçilen bölgeye göre şehirleri çek
+  const getCities = async (regionId: number) => {
+    try {
+      const res = await axios.get(`https://admin.brendoo.com/api/cities/${regionId}`, {
+        headers: { 'Accept-Language': lang, Authorization: `Bearer ${token}` },
+      });
+      if (res.data) setCityData(res.data);
+    } catch (e) {
+      console.error('Cities fetch error:', e);
+    }
+  };
+
+  // Başlangıçta bölgeleri çek
+  useEffect(() => {
+    getRegions();
+  }, []);
+
+  // regionId değişince şehirleri çek
+  useEffect(() => {
+    if (regionId) {
+      getCities(regionId);
+    } else {
+      setCityData([]);
+      setCityId('');
+    }
+  }, [regionId]);
+
+  // Eğer localStorage'dan bölge ve şehir var ise set et
+  useEffect(() => {
+    if (parsedUser?.customer?.region_id) setRegionId(parsedUser.customer.region_id);
+    if (parsedUser?.customer?.city_id) setCityId(parsedUser.customer.city_id);
+  }, [parsedUser]);
 
   // Address change modal state
   const [changeAddress, setChangeAddress] = useState<boolean>(false);
@@ -79,10 +147,12 @@ const OrderItemsDetail = () => {
   // ID helper (order_id və ya id-dən hansısı varsa götür)
   const getOrderId = (o: any) => o?.order_id ?? o?.id ?? null;
 
-  // Modal aç: mövcud ünvanı input-a qoy
+  // Ünvan modalını açanda user-in datalarını doldur
   const openAddressModal = () => {
     setAddrError('');
     setAddressInput(order?.address || '');
+    setRegionId(order?.region_id || '');
+    setCityId(order?.city_id || '');
     setChangeAddress(true);
   };
 
@@ -99,12 +169,12 @@ const OrderItemsDetail = () => {
     const trimmed = addressInput.trim();
 
     if (trimmed.length < 5) {
-      setAddrError('Адрес должен содержать минимум 5 символов.');
+      setAddrError(tarnslation?.msg_one ?? '');
       return;
     }
     const orderId = getOrderId(order);
     if (!orderId) {
-      setAddrError('Заказ не найден (order_id).');
+      setAddrError(tarnslation?.err_ord ?? '');
       return;
     }
 
@@ -130,6 +200,8 @@ const OrderItemsDetail = () => {
         body: JSON.stringify({
           order_id: orderId,
           address: trimmed,
+          region_id: regionId, // 🔹 yeni əlavə
+          city_id: cityId, // 🔹 yeni əlavə
         }),
       });
 
@@ -139,14 +211,13 @@ const OrderItemsDetail = () => {
       }
       if (!res.ok) {
         const text = await res.text().catch(() => '');
-        throw new Error(text || `Не удалось обновить адрес. HTTP ${res.status}`);
+        throw new Error(text || `${tarnslation?.catchhttp ?? ''} ${res.status}`);
       }
 
-      // Serverdə yeniləndi -> yenidən çək və modalı bağla
       await refetch?.();
       setChangeAddress(false);
     } catch (e: any) {
-      setAddrError(e.message || 'Произошла ошибка при обновлении адреса.');
+      setAddrError((e.message || tarnslation?.ddd) ?? '');
       console.error('changeOrderAddress error:', e);
     } finally {
       setSavingAddress(false);
@@ -185,7 +256,9 @@ const OrderItemsDetail = () => {
                 >
                   <IoClose size={22} />
                 </button>
-                <h2 className="text-xl font-semibold mb-4">Изменить адрес</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  {tarnslation?.Изменитьадрес ?? ''}
+                </h2>
 
                 <input
                   type="text"
@@ -200,6 +273,23 @@ const OrderItemsDetail = () => {
                   autoFocus
                 />
 
+                <SearchableSelect
+                  regionData={regionData}
+                  value={regionId}
+                  onChange={(selectedRegionId: number) => {
+                    setRegionId(selectedRegionId);
+                    setCityId('');
+                  }}
+                />
+
+                <SearchableSelectCity
+                  cityData={cityData}
+                  value={cityId}
+                  onChange={(selectedCityId: number) => setCityId(selectedCityId)}
+                  // @ts-expect-error disabled !regionId1
+                  disabled={!regionId}
+                />
+
                 {addrError && <p className="text-sm text-red-600 mb-2">{addrError}</p>}
 
                 <button
@@ -207,7 +297,9 @@ const OrderItemsDetail = () => {
                   onClick={handleSaveAddress}
                   disabled={savingAddress}
                 >
-                  {savingAddress ? 'Сохранение...' : 'Изменить адрес'}
+                  {savingAddress
+                    ? tarnslation?.coxranenie ?? ''
+                    : tarnslation?.izmen_ad ?? ''}
                 </button>
               </div>
             </div>
@@ -224,27 +316,33 @@ const OrderItemsDetail = () => {
                       <Package className="h-6 w-6 text-slate-600" />
                     </div>
                     <div>
-                      <div className="text-sm text-slate-500">Номер заказа:</div>
+                      <div className="text-sm text-slate-500">
+                        {tarnslation?.Номерзаказа ?? ''}
+                      </div>
                       <div className="font-semibold">{order.order_number}</div>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-sm text-slate-500">История заказов:</div>
+                    <div className="text-sm text-slate-500">
+                      {tarnslation?.Историязаказов ?? ''}
+                    </div>
                     <div className="font-semibold">
                       {new Date(order.order_date).toLocaleDateString()}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-sm text-slate-500">Номер продукта</div>
+                    <div className="text-sm text-slate-500">
+                      {tarnslation?.Номерпродукта ?? ''}
+                    </div>
                     <div className="font-semibold">
-                      {order.order_items_count} продукт
+                      {order.order_items_count} {tarnslation?.продукт ?? ''}
                     </div>
                   </div>
 
                   <button className="bg-blue-100 text-blue-700 px-6 py-3 rounded-lg font-medium hover:bg-blue-200 transition-colors">
-                    Загрузить счет-фактуру
+                    {tarnslation?.Загрузитьсчетфактуру ?? ''}
                   </button>
                 </div>
               </div>
@@ -287,7 +385,7 @@ const OrderItemsDetail = () => {
                             className="text-blue-600 text-sm"
                             onClick={() => setProductCommit(item.id)}
                           >
-                            Оцените продукт
+                            {tarnslation?.Оценитепродукт ?? ''}
                           </button>
                         )}
                       </div>
@@ -323,7 +421,6 @@ const OrderItemsDetail = () => {
                         <div
                           className="h-1 bg-green-500 transition-all duration-500"
                           style={{
-                            // burada bütün statuslar done kimi göstərilir
                             width: '100%',
                           }}
                         />
@@ -358,7 +455,7 @@ const OrderItemsDetail = () => {
                               <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center">
                                 <CheckCircle2 className="w-4 h-4" />
                               </div>
-                              <p className="mt-2 text-xs font-medium capitalize">
+                              <p className="mt-2 text-xs font-medium --capitalize">
                                 {item.statusDelivery.status}
                               </p>
                               <p className="text-[10px] text-slate-500 whitespace-nowrap">
@@ -412,11 +509,13 @@ const OrderItemsDetail = () => {
                   {/* Delivery */}
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
-                      Информация о доставке:
+                      {tarnslation?.d_d ?? ''}
                     </h3>
                     <div className="space-y-4">
                       <div>
-                        <div className="text-sm text-slate-500">Адрес:</div>
+                        <div className="text-sm text-slate-500">
+                          {tarnslation?.adres_key ?? ''}
+                        </div>
                         <div className="font-medium">{order.address}</div>
                       </div>
 
@@ -425,7 +524,7 @@ const OrderItemsDetail = () => {
                           className="text-blue-600 flex items-center gap-1 text-sm"
                           onClick={openAddressModal}
                         >
-                          Изменить адресную информацию
+                          {tarnslation?.ism_ ?? ''}
                           <svg
                             width="16"
                             height="16"
@@ -446,11 +545,11 @@ const OrderItemsDetail = () => {
                   {/* Payment */}
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
-                      Платежная информация:
+                      {tarnslation?.p_p ?? ''}
                     </h3>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <div className="text-slate-500">Количество продукта:</div>
+                        <div className="text-slate-500">{tarnslation?.kol_ ?? ''}</div>
                         <div className="font-medium">
                           {formatCurrency(order.total_price)}
                         </div>
@@ -458,7 +557,9 @@ const OrderItemsDetail = () => {
 
                       {order.discount && Number.parseFloat(order.discount) > 0 && (
                         <div className="flex justify-between items-center">
-                          <div className="text-slate-500">Скидка:</div>
+                          <div className="text-slate-500">
+                            {tarnslation?.Скидка ?? ''}
+                          </div>
                           <div className="font-medium text-red-500">
                             -{formatCurrency(order.discount)}
                           </div>
@@ -466,7 +567,7 @@ const OrderItemsDetail = () => {
                       )}
 
                       <div className="flex justify-between items-center">
-                        <div className="text-slate-500">Сумма доставки:</div>
+                        <div className="text-slate-500">{tarnslation?.Сумма ?? ''}</div>
                         <div className="font-medium">
                           {order.delivered_price
                             ? formatCurrency(order.delivered_price)
@@ -475,7 +576,9 @@ const OrderItemsDetail = () => {
                       </div>
 
                       <div className="border-t pt-4 flex justify-between items-center">
-                        <div className="text-slate-500">:Сумма доставки</div>
+                        <div className="text-slate-500">
+                          {tarnslation?.Суммадоставки ?? ''}
+                        </div>
                         <div className="font-bold text-green-600">
                           {formatCurrency(order.final_price)}
                         </div>

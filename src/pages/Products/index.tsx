@@ -297,7 +297,7 @@ const DropdownItemFilter = memo(
             <div className="mb-4">
               <input
                 type="text"
-                placeholder={`${data.title} ${tarnslation?.axtar ?? ""}`}
+                placeholder={`${data.title} ${tarnslation?.axtar ?? ''}`}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 text-sm border border-[#E5E5E5] rounded-md outline-none focus:border-blue-500 transition-colors"
@@ -739,7 +739,6 @@ export default function Products({
 
       if (res.data) {
         setNewFiltersData(res.data);
-        console.log(res.data, 'SALAM ALA COCUX!');
       }
     } catch (error) {
       console.log(error);
@@ -750,6 +749,10 @@ export default function Products({
 
   React.useEffect(() => {
     fetchNewFilters();
+  }, [category, lang]);
+
+  React.useEffect(() => {
+    console.log(newFiltersData?.filters, 'FILTERLER');
   }, [category, lang]);
 
   if (isInitialLoading) {
@@ -909,7 +912,6 @@ export default function Products({
                         onSelectBrand={handleBrandSelect}
                       />
                     )}
-
                     {newFiltersData?.filters?.map(item => (
                       <DropdownItemFilter
                         key={item.id}
