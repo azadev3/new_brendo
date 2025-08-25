@@ -1,6 +1,6 @@
 import Header from '../components/Header';
 import { Footer } from '../components/Footer';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { TranslationsKeys } from '../setting/Types';
 import GETRequest from '../setting/Request';
 import ROUTES from '../setting/routes';
@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Sucses() {
-  const navigate = useNavigate();
   const { lang = 'ru' } = useParams<{ lang: string }>();
   const userInfo = localStorage.getItem('user-info');
   const parsedInfo = userInfo ? JSON.parse(userInfo) : null;
