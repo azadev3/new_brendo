@@ -12,6 +12,7 @@ import Loading from './components/Loading';
 import Header from './components/Header';
 import { useCollectionModal } from './contexts/CollectionModalProvider';
 import { CollectionProvider } from './pages/influencer_dashboard/CollectionProvider';
+import ResetPasswordConfrim from './pages/userIn/ResetPasswordConfrim';
 
 // Lazy load pages - bu hissəni dəyişmədim
 const Home = lazy(() => import('./pages/Home'));
@@ -213,6 +214,11 @@ const App = () => {
                       }
                     />
                   )}
+
+                  <Route
+                    path="/:lang/influencers/password-reset/:slug"
+                    element={<ResetPasswordConfrim />}
+                  />
                 </Routes>
               </Suspense>
 

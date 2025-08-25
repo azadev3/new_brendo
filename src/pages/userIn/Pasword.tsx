@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import GETRequest from '../../setting/Request';
 import { TranslationsKeys } from '../../setting/Types';
 import axios from 'axios';
@@ -10,6 +10,10 @@ import ROUTES from '../../setting/routes';
 
 export default function Password() {
   const { lang } = useParams<{ lang: string }>() || { lang: 'ru' };
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type');
+  const isUser = type === 'user';
+  const isInfluencer = type === 'influencer';
 
   const { data: tarnslation } = GETRequest<TranslationsKeys>(
     `/translates`,
@@ -42,15 +46,29 @@ export default function Password() {
     'registerImage',
     [lang],
   );
+
+  const REQ_ENDPOINT = isUser
+    ? '/api/password-reset/request'
+    : isInfluencer
+    ? '/api/influencers/password-reset/request'
+    : '';
   const handleSubmit = async (values: { email: string }) => {
     setLoading(true);
     setFormStatus(null); // Reset status message
     await axios
-      .post('https://admin.brendoo.com/api/password-reset/request', {
-        email: values.email,
-      })
+      .post(
+        `https://admin.brendoo.com${REQ_ENDPOINT}`,
+        {
+          email: values.email,
+        },
+        {
+          headers: {
+            'Accept-Language': lang,
+          },
+        },
+      )
       .then(() => {
-        toast.success('code sucsesfully send to your email');
+        toast.success(tarnslation?.cc ?? '');
         setFormStatus(null);
         setLoading(false);
         localStorage.setItem('EmailForReset', values.email);
@@ -60,8 +78,17 @@ export default function Password() {
           }`,
         );
       })
-      .catch(() => {
-        toast.error('some thing get wrong ');
+      .catch(error => {
+        if (axios.isAxiosError(error)) {
+          if (
+            error.response &&
+            error.response.data?.errors &&
+            error.response.data?.errors[0]
+          ) {
+            toast.error(error?.response?.data?.errors[0]?.toString() ?? '');
+          }
+        }
+        toast.error(tarnslation?.ss ?? '');
       });
   };
 

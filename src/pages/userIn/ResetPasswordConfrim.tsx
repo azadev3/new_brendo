@@ -9,6 +9,11 @@ import { TranslationsKeys } from '../../setting/Types';
 import ROUTES from '../../setting/routes';
 
 export default function ResetPasswordConfrim() {
+  const isInfluencer = window.location.pathname.includes('influencers');
+  const REQ_ENDPOINT = isInfluencer
+    ? '/api/influencers/password-reset/reset'
+    : '/api/password-reset/reset';
+
   const { lang, slug } = useParams<{
     lang: string;
     page: string;
@@ -35,10 +40,10 @@ export default function ResetPasswordConfrim() {
 
   const validationSchema = Yup.object({
     password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
+      .min(6, tarnslation?.is_r_13 ?? '')
       .required(tarnslation?.is_r_14 ?? ''),
     password2: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
+      .min(6, tarnslation?.is_r_13 ?? '')
       .required(tarnslation?.is_r_14 ?? ''),
   });
 
@@ -46,8 +51,9 @@ export default function ResetPasswordConfrim() {
     setLoading(true);
     setFormStatus(null); // Reset status message
     const Email = localStorage.getItem('EmailForReset');
+
     await axios
-      .post('https://admin.brendoo.com/api/password-reset/reset', {
+      .post(`https://admin.brendoo.com${REQ_ENDPOINT}`, {
         email: Email,
         reset_token: slug,
         new_password: values.password,
@@ -55,13 +61,13 @@ export default function ResetPasswordConfrim() {
       })
       .then(response => {
         localStorage.setItem('user-info', JSON.stringify(response));
-        toast.success('Password sucsesfully reset ');
+        toast.success(tarnslation?.dd_1 ?? '');
         //add token to local
         navigate(`/${lang}/${ROUTES.login[lang as keyof typeof ROUTES.login]}`);
       })
       .catch(error => {
         console.log(error);
-        toast.error('Error while logging in');
+        toast.error(tarnslation?.bb ?? '');
       });
   };
 

@@ -11,7 +11,7 @@ import axios from 'axios';
 export default function Sucses() {
   const navigate = useNavigate();
   const { lang = 'ru' } = useParams<{ lang: string }>();
-  const userInfo = localStorage.getItem("user-info");
+  const userInfo = localStorage.getItem('user-info');
   const parsedInfo = userInfo ? JSON.parse(userInfo) : null;
   const token = parsedInfo?.token;
 
@@ -34,7 +34,7 @@ export default function Sucses() {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         localStorage.removeItem('order_ID');
@@ -42,15 +42,12 @@ export default function Sucses() {
 
         window.scrollTo(0, 0);
 
-        navigate(
-          `/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`
-        );
+        // navigate(`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`);
       }
     } catch (error) {
       console.error('Ödeme kontrol hatası:', error);
     }
   };
-
 
   useEffect(() => {
     const orderIdStr = localStorage.getItem('order_ID');
@@ -92,9 +89,9 @@ export default function Sucses() {
             />
 
             <Link
-            reloadDocument
-              to={`/${lang}/${ROUTES.order[lang as keyof typeof ROUTES.order]
-                }`}>
+              reloadDocument
+              to={`/${lang}/${ROUTES.order[lang as keyof typeof ROUTES.order]}`}
+            >
               <h6 className="text-nowrap self-stretch my-auto hover:text-blue-600">
                 {tarnslation?.basked}
               </h6>
@@ -104,9 +101,7 @@ export default function Sucses() {
               src="https://cdn.builder.io/api/v1/image/assets/TEMP/64bb3b3dae771cd265db1accd95aa96f30bd9da3da88a57867743da53bebc0eb?placeholderIfAbsent=true&apiKey=2d5d82cf417847beb8cd2fbbc5e3c099"
               className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
             />
-            <h6 className="text-nowrap self-stretch my-auto">
-              {tarnslation?.sucses}
-            </h6>
+            <h6 className="text-nowrap self-stretch my-auto">{tarnslation?.sucses}</h6>
           </div>
         </div>
         <section className="flex  justify-center items-center pb-[120px]  px-7">
@@ -117,7 +112,8 @@ export default function Sucses() {
               height="450"
               viewBox="0 0 450 450"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 d="M237.196 113.728L193.316 103.716C192.966 103.639 192.635 103.493 192.341 103.287C192.048 103.08 191.799 102.818 191.608 102.514C191.418 102.21 191.29 101.872 191.231 101.518C191.173 101.164 191.186 100.802 191.269 100.453L191.633 98.8514C191.71 98.5012 191.856 98.1698 192.062 97.8766C192.269 97.5833 192.531 97.3341 192.835 97.1435C193.139 96.9529 193.477 96.8247 193.831 96.7664C194.185 96.7081 194.547 96.7208 194.896 96.8039L238.771 106.816L237.196 113.728Z"
                 fill="#C7B8F8"
@@ -398,16 +394,26 @@ export default function Sucses() {
               {tarnslation?.uğurlu_sifariş_desc}
             </p>
             <Link
-            reloadDocument
-              to={`/${lang}/${ROUTES?.home[lang as keyof typeof ROUTES.home]}`}>
-              <button className="px-[30px] py-[16px] rounded-[100px] border border-[#3873C3] border-opacity-25 flex flex-row gap-2 text-[16px] font-medium text-[#3873C3]">
+              reloadDocument
+              to={`/${lang}/${ROUTES?.home[lang as keyof typeof ROUTES.home]}`}
+            >
+              <button
+                onClick={() => {
+                  window.open(
+                    `/${lang}/${ROUTES?.home[lang as keyof typeof ROUTES.home]}`,
+                    '_blank',
+                  );
+                }}
+                className="px-[30px] py-[16px] rounded-[100px] border border-[#3873C3] border-opacity-25 flex flex-row gap-2 text-[16px] font-medium text-[#3873C3]"
+              >
                 {tarnslation?.uğurlu_sifariş_btn}
                 <svg
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <g clipPath="url(#clip0_1234_3811)">
                     <path
                       d="M9 14L5 10L9 6"

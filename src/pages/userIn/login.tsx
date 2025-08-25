@@ -272,15 +272,13 @@ export default function Login() {
                           className="text-red-500 text-sm mt-1"
                         />
                         <div
-                          onClick={() =>
-                            navigate(
-                              `/${lang}/${
-                                ROUTES.resetPasword[
-                                  lang as keyof typeof ROUTES.resetPasword
-                                ]
-                              }`,
-                            )
-                          }
+                          onClick={() => {
+                            const resetPath =
+                              ROUTES.resetPasword[
+                                lang as keyof typeof ROUTES.resetPasword
+                              ];
+                            navigate(`/${lang}/${resetPath}?type=${userType}`);
+                          }}
                           className="mt-3 text-sm text-right text-white max-md:max-w-full cursor-pointer hover:underline"
                         >
                           {tarnslation?.forgotpassword}{' '}
