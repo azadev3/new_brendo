@@ -267,7 +267,7 @@ const OrderMainItem = ({ order, cancellationReasons }: { order: Order | any, can
             <div className="flex gap-3 items-start">
               <img
                 src={item?.product?.image || '/placeholder.svg'}
-                className="w-[100px] h-[90px] object-cover rounded-md"
+                className="w-[100px] h-[90px] object-contain rounded-md"
               />
               <div>
                 <div className="font-medium text-black">

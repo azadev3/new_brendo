@@ -803,7 +803,7 @@ export default function ProductId() {
                   <GiHanger size={24} />
                 </span>
                 <span className="text-[#3873C3] text-[14px]">
-                  Испытайте продукт на себя
+                  {tarnslation?.na_cby ?? ''}
                 </span>
               </div>
             </div>

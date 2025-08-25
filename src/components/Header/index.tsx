@@ -923,7 +923,7 @@ export default function Header() {
                         <img
                           loading="lazy"
                           src={item.product?.image}
-                          className="object-cover shrink-0 self-stretch my-auto rounded-3xl h-[100px] w-[100px]"
+                          className="object-contain shrink-0 self-stretch my-auto rounded-3xl h-[100px] w-[100px]"
                         />
                         <div className="flex flex-col self-stretch my-auto w-[152px]">
                           <div className="w-full truncate text-sm font-medium text-black">

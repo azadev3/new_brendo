@@ -126,7 +126,7 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
         window.open(imageUrl, '_blank');
         toast.success(tarnslation?.succ_t ?? 'Успешно!');
       } else {
-        toast.error(tarnslation?.r_i_n_f ?? 'Resim bulunamadı!');
+        toast.error(tarnslation?.r_i_n_f ?? '');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -244,7 +244,9 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
               </button>
 
               <div className="mt-8">
-                <h4 className="text-[16px] font-semibold mb-2">Результат:</h4>
+                <h4 className="text-[16px] font-semibold mb-2">
+                  {tarnslation?.Результат ?? ''}
+                </h4>
                 <img
                   src={resultImageUrl}
                   alt="Try-on result"
@@ -255,11 +257,10 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
           ) : (
             <>
               <div className="mb-[40px]">
-                <h4 className="font-[500] text-[28px]">Примерьте одежду!</h4>
-                <p className="text-[15px]">
-                  Загрузите изображение одежды и своё фото, чтобы примерить одежду
-                  виртуально.
-                </p>
+                <h4 className="font-[500] text-[28px]">
+                  {tarnslation?.Примерьтеодеждa ?? ''}
+                </h4>
+                <p className="text-[15px]">{tarnslation?.RES ?? ''}</p>
               </div>
 
               <UploadBox
@@ -287,14 +288,16 @@ const SelectSizeSidebar = ({ openSidebar, onClose }: Props) => {
                     className="px-6 py-2 border w-full border-blue-400 text-blue-600 rounded-full hover:bg-blue-50 transition"
                     onClick={onClose}
                   >
-                    Отмена
+                    {tarnslation?.Cancel ?? ''}
                   </button>
                   <button
                     className="px-6 py-2 w-full bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-60"
                     onClick={handleSubmit}
                     disabled={isSubmitting || !clothImage || !humanImage}
                   >
-                    {isSubmitting ? 'Загружается...' : 'Примерить'}
+                    {isSubmitting
+                      ? tarnslation?.Загружается ?? ''
+                      : tarnslation?.Примерить ?? ''}
                   </button>
                 </div>
               )}

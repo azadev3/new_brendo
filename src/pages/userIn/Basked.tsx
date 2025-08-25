@@ -194,7 +194,7 @@ export default function Basked() {
               to={`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.product]}`}
             >
               <h6 className="text-nowrap self-stretch my-auto text-black hover:text-blue-600">
-                {tarnslation?.home}{' '}
+                {tarnslation?.home}
               </h6>
             </Link>
 
@@ -204,12 +204,12 @@ export default function Basked() {
               className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
             />
             <h6 className="text-nowrap self-stretch my-auto">{tarnslation?.basked} </h6>
-          </div>{' '}
+          </div>
         </div>
         <section className="px-[40px] max-sm:px-4">
           <h3 className="text-[40px] font-semibold  max-sm:text-[32px] mt-[28px] mb-[40px]">
-            {tarnslation?.basked}{' '}
-          </h3>{' '}
+            {tarnslation?.basked}
+          </h3>
         </section>
         <section className="flex lg:flex-row flex-col max-sm:px-4  h-fit px-[40px] justify-between mb-[100px] gap-[65px]">
           <div className="flex overflow-hidden flex-col justify-center p-10 rounded-3xl bg-stone-50 w-full gap-[65px] h-fit max-md:px-5">
@@ -222,7 +222,7 @@ export default function Basked() {
                           <img
                             loading="lazy"
                             src={item.product.image}
-                            className="object-cover shrink-0 self-stretch my-auto rounded-3xl aspect-[1.12] w-[134px]"
+                            className="object-contain shrink-0 self-stretch my-auto rounded-3xl aspect-[1.12] w-[134px]"
                           />
                           <div className="flex flex-col self-stretch my-auto w-[152px]">
                             <div className="gap-1 self-start text-base font-semibold text-center text-black">
