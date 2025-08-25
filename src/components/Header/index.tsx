@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useMatch, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
 import { CategoryHeader } from '../ClothingMenu';
 import ROUTES, { getRouteKey } from '../../setting/routes';
 import GETRequest, { axiosInstance } from '../../setting/Request';
@@ -467,6 +467,19 @@ export default function Header() {
   const userType = localStorage.getItem('user_type');
   const hasUserType = userType && userType?.length > 0 ? userType : null;
 
+  const [isMobileSearchLoading, setIsMobileSearchLoading] = useState(false);
+  useEffect(() => {
+    if (isSearchOpen) setIsMobileSearchLoading(false);
+  }, [FilteredProduct, isSearchOpen]);
+
+  const location = useLocation();
+  const productsRoute = ROUTES.product[lang as keyof typeof ROUTES.product];
+
+  // /{lang}/{productsRoute} (liste sayfası) ise true
+  const pathParts = location.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  const isProductsListPage =
+    pathParts[0] === lang && pathParts[1] === productsRoute && pathParts.length === 2;
+
   return (
     <div className=" block w-full z-[99999999999] top-0 min-h-[68px]">
       <div className=" lg:flex hidden flex-col relative bg-white">
@@ -799,7 +812,6 @@ export default function Header() {
                           scrollbarColor: '#a0aec0 #edf2f7', // thumb color and track color for Firefox
                         }}
                       >
-                        {' '}
                         {category?.subCategories?.map((subcategory: SubCategory) => (
                           <li
                             onClick={() => setCurrentSubCategoryId(subcategory.id)}
@@ -1145,26 +1157,23 @@ export default function Header() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const value = e.target.value;
                 setSearchValue(value);
+
                 if (debounceTimeout.current) {
                   clearTimeout(debounceTimeout.current);
                 }
+
+                setIsMobileSearchLoading(value !== '');
+
                 debounceTimeout.current = setTimeout(() => {
                   setDebouncedValue(value);
 
                   if (value !== '') {
                     disableScrolling();
-                    // Add your additional logic here
                   } else {
                     enableScrolling();
+                    setIsMobileSearchLoading(false);
                   }
                 }, 300);
-                // if (e.target.value !== '') {
-                //     disableScrolling();
-                //     setIsClothingOpen(false);
-                //     setIsBaskedOpen(false);
-                // } else {
-                //     enableScrolling();
-                // }
               }}
               className={`h-full w-full bg-transparent  outline-none  ${
                 isSearchOpen ? 'opacity-100' : 'hidden'
@@ -1203,8 +1212,36 @@ export default function Header() {
               </svg>
             </button>
             {isSearchOpen && (
-              <div className="bg-white rounded-md  absolute w-[90%]  left-auto right-auto z-50 max-h-[300px] top-[100%]   overflow-y-auto">
-                {' '}
+              <div
+                className={`bg-white rounded-md absolute w-[100%] left-0 z-1000 max-h-[400px] w-full ${
+                  isProductsListPage ? 'top-[90px]' : 'top-[70px]'
+                } overflow-y-auto`}
+              >
+                {isMobileSearchLoading && (
+                  <div className="w-full flex items-center justify-center py-6">
+                    {/* minimal spinner */}
+                    <svg
+                      className="animate-spin h-6 w-6 text-[#3873C3]"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                  </div>
+                )}
+
+                {/* sonuçlar */}
                 {FilteredProduct?.data.map(item => (
                   <p
                     className="w-full  px-[16px] py-[14px] text-[14px] font-normal border-b border-[#E5E5E5] cursor-pointer"
@@ -1216,6 +1253,7 @@ export default function Header() {
                         }/${item.slug[lang as keyof typeof item.slug]}`,
                       );
                       setIsSearchOpen(false);
+                      setIsMobileSearchLoading(false); // seçimde spinner kapat
                     }}
                   >
                     {item.title}
@@ -1646,7 +1684,6 @@ export default function Header() {
                       }?category=${CurrentCategory}&subCategory=${item.id}`}
                       key={item.id}
                     >
-                      {' '}
                       <div className="h-[60px] w-full bg-white hover:bg-slate-200 flex flex-row gap-3 border-b-2 border-black  border-opacity-10  items-center justify-between pb-[] px-[16px] cursor-pointer">
                         <div className="flex flex-row items-center gap-3  ">
                           {item.title}
