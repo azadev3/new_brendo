@@ -68,7 +68,7 @@ export default function MobileFilter({ children, translation, onClose }: MobileF
         onClick={closeFilter}
       />
       <div
-        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 transition-transform duration-300 md:hidden ${
+        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[50] transition-transform duration-300 md:hidden ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
       >

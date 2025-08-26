@@ -1104,7 +1104,7 @@ export default function Header() {
 
         <div className="flex flex-row gap-4 w-full justify-end">
           <div
-            className={` top-[14px] flex justify-between ease-in-out  duration-500  pr-[0] z-[54] ${
+            className={` top-[14px] flex justify-between ease-in-out  duration-500  pr-[0] z-[40] ${
               isSearchOpen
                 ? ' left-[16px] h-[40px]  w-full bg-[#F5F5F5] rounded-[100px] '
                 : ' right-[6rem]  w-fit '

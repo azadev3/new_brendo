@@ -65,12 +65,10 @@ const OrderItemsDetail = () => {
     }
   };
 
-  // Başlangıçta bölgeleri çek
   useEffect(() => {
     getRegions();
   }, []);
 
-  // regionId değişince şehirleri çek
   useEffect(() => {
     if (regionId) {
       getCities(regionId);
@@ -80,11 +78,12 @@ const OrderItemsDetail = () => {
     }
   }, [regionId]);
 
-  // Eğer localStorage'dan bölge ve şehir var ise set et
   useEffect(() => {
-    if (parsedUser?.customer?.region_id) setRegionId(parsedUser.customer.region_id);
-    if (parsedUser?.customer?.city_id) setCityId(parsedUser.customer.city_id);
-  }, [parsedUser]);
+    const s = localStorage.getItem('user-info');
+    const p = s ? JSON.parse(s) : null;
+    if (p?.customer?.region_id) setRegionId(Number(p.customer.region_id));
+    if (p?.customer?.city_id) setCityId(Number(p.customer.city_id));
+  }, []); // <-- sadece mount'ta
 
   // Address change modal state
   const [changeAddress, setChangeAddress] = useState<boolean>(false);
