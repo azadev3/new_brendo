@@ -470,6 +470,80 @@ const DropdownItemBrand = memo(
   },
 );
 
+const PriceRange = memo(function PriceRange({
+  t,
+  minPrice,
+  maxPrice,
+  setMinPrice,
+  setMaxPrice,
+}: {
+  t: TranslationsKeys | undefined;
+  minPrice: number;
+  maxPrice: number;
+  setMinPrice: (v: number) => void;
+  setMaxPrice: (v: number) => void;
+}) {
+  // basit guard: min > max ise otomatik düzelt
+  const handleMin = (v: string) => {
+    const n = Number(v);
+    if (Number.isNaN(n)) return;
+    if (maxPrice > 0 && n > maxPrice) {
+      setMinPrice(maxPrice);
+    } else {
+      setMinPrice(n < 0 ? 0 : n);
+    }
+  };
+
+  const handleMax = (v: string) => {
+    const n = Number(v);
+    if (Number.isNaN(n)) return;
+    if (n > 0 && minPrice > 0 && n < minPrice) {
+      setMaxPrice(minPrice);
+    } else {
+      setMaxPrice(n < 0 ? 0 : n);
+    }
+  };
+
+  const clear = () => {
+    setMinPrice(0);
+    setMaxPrice(0);
+  };
+
+  return (
+    <div className="flex flex-col w-full text-sm">
+      <label className="text-black">{t?.Qiymət || 'Цена'}</label>
+      <div className="flex overflow-hidden gap-2 p-1.5 mt-2 w-full bg-neutral-100 rounded-[100px] text-black text-opacity-60">
+        <input
+          inputMode="numeric"
+          onChange={e => handleMin(e.target.value)}
+          value={minPrice === 0 ? '' : minPrice}
+          type="number"
+          placeholder={t?.min_placeholder || 'мин'}
+          className="overflow-hidden p-3 bg-white rounded-[100px] outline-none w-full"
+        />
+        <input
+          inputMode="numeric"
+          onChange={e => handleMax(e.target.value)}
+          value={maxPrice === 0 ? '' : maxPrice}
+          type="number"
+          placeholder={t?.max_placeholder || 'макс'}
+          className="overflow-hidden p-3 bg-white rounded-[100px] outline-none w-full"
+        />
+      </div>
+
+      {(minPrice > 0 || maxPrice > 0) && (
+        <button
+          type="button"
+          onClick={clear}
+          className="self-start mt-2 text-xs underline text-gray-500"
+        >
+          {t?.təmizlə || 'Təmizlə'}
+        </button>
+      )}
+    </div>
+  );
+});
+
 // Main Products Component
 export default function Products({
   collectionProducts,
@@ -882,6 +956,14 @@ export default function Products({
                               onSelectBrand={handleBrandSelect}
                             />
                           )}
+
+                          <PriceRange
+                            t={tarnslation}
+                            minPrice={minPrice}
+                            maxPrice={maxPrice}
+                            setMinPrice={setminPrice}
+                            setMaxPrice={setmaxPrice}
+                          />
                         </div>
                       </div>
                     </MobileFilter>
@@ -1006,6 +1088,14 @@ export default function Products({
                               onSelectBrand={handleBrandSelect}
                             />
                           )}
+
+                          <PriceRange
+                            t={tarnslation}
+                            minPrice={minPrice}
+                            maxPrice={maxPrice}
+                            setMinPrice={setminPrice}
+                            setMaxPrice={setmaxPrice}
+                          />
                         </div>
                       </div>
                     </MobileFilter>

@@ -1,51 +1,117 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { TranslationsKeys } from "../../setting/Types";
-import GETRequest from "../../setting/Request";
-import ROUTES from "../../setting/routes";
-import { FaAddressCard } from "react-icons/fa";
-import userMan from "../../assets/dashboardUserMan.svg";
-import userWoman from "../../assets/dashboardUserWoman.svg";
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { TranslationsKeys } from '../../setting/Types';
+import GETRequest from '../../setting/Request';
+import ROUTES from '../../setting/routes';
+import { FaAddressCard } from 'react-icons/fa';
+import userMan from '../../assets/dashboardUserMan.svg';
+import userWoman from '../../assets/dashboardUserWoman.svg';
+import { useEffect, useState } from 'react';
 function UserAside({ active }: { active: number }) {
-  const { lang = "ru" } = useParams<{ lang: string }>();
+  const { lang = 'ru' } = useParams<{ lang: string }>();
   const navigate = useNavigate();
   const { data: translation } = GETRequest<TranslationsKeys>(
     `/translates`,
-    "translates",
-    [lang]
+    'translates',
+    [lang],
   );
 
-  const userInfo = localStorage.getItem("user-info");
+  const userInfo = localStorage.getItem('user-info');
   const parsedInfo = userInfo ? JSON.parse(userInfo) : null;
-  console.log(parsedInfo, "paresed");
+  const token = parsedInfo?.token ?? '';
+  const [likedCount, setLikedCount] = useState(0);
+
+  useEffect(() => {
+    let abort = false;
+
+    const fromLocal = () => {
+      const likedStr = localStorage.getItem('likedProducts');
+      if (!likedStr) return 0;
+      try {
+        const arr = JSON.parse(likedStr);
+        return Array.isArray(arr) ? arr.length : 0;
+      } catch {
+        return 0;
+      }
+    };
+
+    const fetchFavorites = async () => {
+      if (!token) {
+        if (!abort) setLikedCount(fromLocal());
+        return;
+      }
+
+      try {
+        const res = await fetch('https://admin.brendoo.com/api/favorites', {
+          headers: {
+            'Accept-Language': lang,
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error('favorites fetch failed');
+        const data = await res.json();
+
+        // olası yanıt şekillerine karşı esnek sayım:
+        // 1) dizi dönerse
+        // 2) { data: [] } dönerse
+        // 3) { meta: { total } } varsa
+        const count = Array.isArray(data)
+          ? data.length
+          : Array.isArray(data?.data)
+          ? data.data.length
+          : typeof data?.meta?.total === 'number'
+          ? data.meta.total
+          : 0;
+
+        if (!abort) setLikedCount(count);
+      } catch {
+        // fallback local
+        if (!abort) setLikedCount(fromLocal());
+      }
+    };
+
+    fetchFavorites();
+
+    // localStorage güncellemelerini yakala (başka tab/komponentten beğeni değişirse)
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'likedProducts' && !token) {
+        setLikedCount(fromLocal());
+      }
+    };
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      abort = true;
+      window.removeEventListener('storage', onStorage);
+    };
+  }, [token, lang]);
+
   return (
     <section className="">
       <div className="flex flex-col self-center max-w-full font-medium text-black w-full max-sm:w-full max-sm:h-36 min-w-full min-h-36 items-center justify-center">
         <img
           className="w-[60px] sm:w-[80px]"
-          src={parsedInfo.customer.gender === "man" ? userMan : userWoman}
+          src={parsedInfo.customer.gender === 'man' ? userMan : userWoman}
           alt=""
         />
         <h1 className="mt-3  text-center text-[16px] font-normal">
-          {parsedInfo?.customer.name}{" "}
+          {parsedInfo?.customer.name}{' '}
         </h1>
         <span>ID: {parsedInfo?.customer.id}</span>
       </div>
       <hr className="mt-4 w-full max-sm:hidden border border-solid border-black border-opacity-10" />
       <Link
-      reloadDocument
-        to={`/${lang}/${
-          ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]
-        }`}
+        reloadDocument
+        to={`/${lang}/${ROUTES.userSettings[lang as keyof typeof ROUTES.userSettings]}`}
       >
         <div
           className={`flex w-full overflow-hidden flex-col lg:h-[56px] h-fit text-black justify-center p-1 ${
-            active === 0 ? "bg-[#B1C7E4]" : "bg-white"
+            active === 0 ? 'bg-[#B1C7E4]' : 'bg-white'
           } rounded-3xl mt-2`}
         >
           <div className="flex gap-3 items-center">
             <div
               className={`p-2 rounded-full ${
-                active === 0 ? "bg-white" : "bg-[#F5F5F5]"
+                active === 0 ? 'bg-white' : 'bg-[#F5F5F5]'
               }`}
             >
               <svg
@@ -55,13 +121,7 @@ function UserAside({ active }: { active: number }) {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="3"
-                  stroke="black"
-                  strokeWidth="1.5"
-                />
+                <circle cx="12" cy="12" r="3" stroke="black" strokeWidth="1.5" />
                 <path
                   d="M13.7658 2.15224C13.3983 2 12.9324 2 12.0005 2C11.0686 2 10.6027 2 10.2351 2.15224C9.74505 2.35523 9.35571 2.74458 9.15272 3.23463C9.06005 3.45834 9.02379 3.7185 9.0096 4.09799C8.98875 4.65568 8.70274 5.17189 8.21943 5.45093C7.73612 5.72996 7.14608 5.71954 6.65268 5.45876C6.31693 5.2813 6.07349 5.18262 5.83342 5.15102C5.30753 5.08178 4.77567 5.22429 4.35485 5.5472C4.03923 5.78938 3.80626 6.1929 3.34032 6.99993C2.87438 7.80697 2.64141 8.21048 2.58948 8.60491C2.52025 9.1308 2.66276 9.66266 2.98566 10.0835C3.13305 10.2756 3.34019 10.437 3.66167 10.639C4.13429 10.936 4.43838 11.4419 4.43835 12C4.43832 12.5581 4.13424 13.0639 3.66167 13.3608C3.34013 13.5629 3.13297 13.7244 2.98557 13.9165C2.66266 14.3373 2.52015 14.8691 2.58938 15.395C2.64131 15.7894 2.87428 16.193 3.34022 17C3.80616 17.807 4.03913 18.2106 4.35475 18.4527C4.77557 18.7756 5.30743 18.9181 5.83333 18.8489C6.07338 18.8173 6.31681 18.7186 6.65253 18.5412C7.14596 18.2804 7.73605 18.27 8.21939 18.549C8.70273 18.8281 8.98874 19.3443 9.0096 19.9021C9.0238 20.2815 9.06006 20.5417 9.15272 20.7654C9.35571 21.2554 9.74505 21.6448 10.2351 21.8478C10.6027 22 11.0686 22 12.0005 22C12.9324 22 13.3983 22 13.7658 21.8478C14.2559 21.6448 14.6452 21.2554 14.8482 20.7654C14.9409 20.5417 14.9772 20.2815 14.9914 19.902C15.0122 19.3443 15.2982 18.8281 15.7815 18.549C16.2648 18.2699 16.8549 18.2804 17.3484 18.5412C17.6841 18.7186 17.9275 18.8172 18.1675 18.8488C18.6934 18.9181 19.2253 18.7756 19.6461 18.4527C19.9617 18.2105 20.1947 17.807 20.6606 16.9999C21.1266 16.1929 21.3595 15.7894 21.4115 15.395C21.4807 14.8691 21.3382 14.3372 21.0153 13.9164C20.8679 13.7243 20.6607 13.5628 20.3392 13.3608C19.8666 13.0639 19.5626 12.558 19.5626 11.9999C19.5626 11.4418 19.8667 10.9361 20.3392 10.6392C20.6608 10.4371 20.868 10.2757 21.0154 10.0835C21.3383 9.66273 21.4808 9.13087 21.4116 8.60497C21.3596 8.21055 21.1267 7.80703 20.6607 7C20.1948 6.19297 19.9618 5.78945 19.6462 5.54727C19.2254 5.22436 18.6935 5.08185 18.1676 5.15109C17.9276 5.18269 17.6841 5.28136 17.3484 5.4588C16.855 5.71959 16.2649 5.73002 15.7816 5.45096C15.2982 5.17191 15.0122 4.65566 14.9914 4.09794C14.9772 3.71848 14.9409 3.45833 14.8482 3.23463C14.6452 2.74458 14.2559 2.35523 13.7658 2.15224Z"
                   stroke="black"
@@ -76,18 +136,18 @@ function UserAside({ active }: { active: number }) {
         </div>
       </Link>
       <Link
-      reloadDocument
+        reloadDocument
         to={`/${lang}/${ROUTES.orders[lang as keyof typeof ROUTES.orders]}`}
       >
         <div
           className={`flex w-full overflow-hidden flex-col lg:h-[56px] h-fit text-black justify-center p-1 ${
-            active === 1 ? "bg-[#B1C7E4]" : "bg-white"
+            active === 1 ? 'bg-[#B1C7E4]' : 'bg-white'
           } rounded-3xl mt-2`}
         >
           <div className="flex gap-3 items-center">
             <div
               className={`p-2 rounded-full ${
-                active === 1 ? "bg-white" : "bg-[#F5F5F5]"
+                active === 1 ? 'bg-white' : 'bg-[#F5F5F5]'
               }`}
             >
               <svg
@@ -123,27 +183,25 @@ function UserAside({ active }: { active: number }) {
               </svg>
             </div>
             <div className="self-stretch my-auto w-[182px] lg:block">
-              {" "}
               {translation?.Sifarişlərim}
             </div>
           </div>
         </div>
       </Link>
+
       <Link
-      reloadDocument
-        to={`/${lang}/${
-          ROUTES.likedUser[lang as keyof typeof ROUTES.likedUser]
-        }`}
+        reloadDocument
+        to={`/${lang}/${ROUTES.likedUser[lang as keyof typeof ROUTES.likedUser]}`}
       >
         <div
           className={`flex w-full overflow-hidden lg:h-[56px] h-fit flex-col text-black justify-center p-1 ${
-            active === 2 ? "bg-[#B1C7E4]" : "bg-white"
+            active === 2 ? 'bg-[#B1C7E4]' : 'bg-white'
           } rounded-3xl mt-2`}
         >
           <div className="flex gap-3 items-center">
             <div
-              className={`p-2 rounded-full ${
-                active === 2 ? "bg-white" : "bg-[#F5F5F5]"
+              className={`p-2 rounded-full relative ${
+                active === 2 ? 'bg-white' : 'bg-[#F5F5F5]'
               }`}
             >
               <svg
@@ -158,28 +216,37 @@ function UserAside({ active }: { active: number }) {
                   fill="black"
                 />
               </svg>
+
+              {/* Badge */}
+              {likedCount > 0 && (
+                <span
+                  aria-label="Liked count"
+                  className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full"
+                >
+                  {likedCount > 99 ? '99+' : likedCount}
+                </span>
+              )}
             </div>
             <div className="self-stretch my-auto w-[182px] lg:block">
-              {translation?.Bəyəndiklərim}{" "}
+              {translation?.Bəyəndiklərim}
             </div>
           </div>
         </div>
       </Link>
+
       <Link
-      reloadDocument
-        to={`/${lang}/${
-          ROUTES.notification[lang as keyof typeof ROUTES.notification]
-        }`}
+        reloadDocument
+        to={`/${lang}/${ROUTES.notification[lang as keyof typeof ROUTES.notification]}`}
       >
         <div
           className={`flex w-full lg:h-[56px] h-fit overflow-hidden flex-col text-black justify-center p-1 ${
-            active === 3 ? "bg-[#B1C7E4]" : "bg-white"
+            active === 3 ? 'bg-[#B1C7E4]' : 'bg-white'
           } rounded-3xl mt-2`}
         >
           <div className="flex gap-3 items-center">
             <div
               className={`p-2 rounded-full ${
-                active === 3 ? "bg-white" : "bg-[#F5F5F5]"
+                active === 3 ? 'bg-white' : 'bg-[#F5F5F5]'
               }`}
             >
               <svg
@@ -204,7 +271,7 @@ function UserAside({ active }: { active: number }) {
               </svg>
             </div>
             <div className="self-stretch my-auto w-[182px] lg:block">
-              {translation?.Bildirşlər}{" "}
+              {translation?.Bildirşlər}{' '}
             </div>
           </div>
         </div>
@@ -223,17 +290,15 @@ function UserAside({ active }: { active: number }) {
       </Link> */}
       {/* feature link */}
       <Link
-      reloadDocument
+        reloadDocument
         to={`/${lang}/${ROUTES.address[lang as keyof typeof ROUTES.address]}`}
       >
-        <div className={`return-link-wrapper ${active === 10 ? "active" : ""}`}>
+        <div className={`return-link-wrapper ${active === 10 ? 'active' : ''}`}>
           <div className="return-link-content">
-            <div className={`return-icon ${active === 10 ? "active" : ""}`}>
+            <div className={`return-icon ${active === 10 ? 'active' : ''}`}>
               <FaAddressCard size={24} />
             </div>
-            <div className="return-label">
-              {translation?.address_title || ""}
-            </div>
+            <div className="return-label">{translation?.address_title || ''}</div>
           </div>
         </div>
       </Link>
@@ -241,19 +306,19 @@ function UserAside({ active }: { active: number }) {
       <div
         className="cursor-pointer"
         onClick={() => {
-          localStorage.removeItem("user-info");
+          localStorage.removeItem('user-info');
           navigate(`/${lang}/${ROUTES.home[lang as keyof typeof ROUTES.home]}`);
         }}
       >
         <div
           className={`flex lg:h-[56px] h-fit w- overflow-hidden flex-col text-black justify-center p-1 ${
-            active === 4 ? "bg-[#B1C7E4]" : "bg-white"
+            active === 4 ? 'bg-[#B1C7E4]' : 'bg-white'
           } rounded-3xl mt-2`}
         >
           <div className="flex gap-3 items-center">
             <div
               className={`p-2 rounded-full ${
-                active === 3 ? "bg-white" : "bg-[#F5F5F5]"
+                active === 3 ? 'bg-white' : 'bg-[#F5F5F5]'
               }`}
             >
               <svg
@@ -279,7 +344,7 @@ function UserAside({ active }: { active: number }) {
               </svg>
             </div>
             <div className="self-stretch my-auto w-[182px] lg:block  text-[#FD0769]">
-              {translation?.Çıxış}{" "}
+              {translation?.Çıxış}{' '}
             </div>
           </div>
         </div>
